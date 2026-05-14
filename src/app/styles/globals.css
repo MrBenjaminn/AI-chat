@@ -6,7 +6,6 @@ body {
   font-size: var(--main-font-size);
   min-height: 100vh;
   background-color: #F7F8FA;
-  padding: 10px;
 }
 
 .visually-hidden {

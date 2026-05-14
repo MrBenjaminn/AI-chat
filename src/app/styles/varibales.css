@@ -1,8 +1,10 @@
 :root {
   --primary-color: #2B7AFB;
+  --dark-color: #19213D;
   --light-color: white;
   --neutral-color: #666F8D;
   --border-color: #F0F2F5;
+  --background-hover: #d8dbdf;
 
   --border-radius: 8px;
   --regular-radius: 16px;

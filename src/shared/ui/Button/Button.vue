@@ -1,22 +1,16 @@
 <script setup>
-const props = defineProps({
-  className: {
-    type: String,
-  }
-})
+
 </script>
 
 
 
 <template>
-  <div>
     <button
         class="button"
         :class="className"
     >
       <slot></slot>
     </button>
-  </div>
 </template>
 
 
@@ -35,15 +29,30 @@ const props = defineProps({
   box-shadow: var(--main-box-shadow);
 }
 
+.button:hover {
+  transform: scale(1.05);
+}
+
 .button-header {
   max-height: 32px;
   column-gap: 4px;
   font-weight: 400;
 }
 
+.button-side-bar{
+  width: 248px;
+  column-gap: 4px;
+  margin-top: auto;
+}
+
 .button-chat {
   height: 42px;
   width: 42px;
   padding: 0;
+}
+
+.button-send-message {
+  margin-left: auto;
+  column-gap: 16px;
 }
 </style>
