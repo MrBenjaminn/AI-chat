@@ -5,13 +5,19 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    svgLoader(),
-  ],
+  plugins: [vue(), svgLoader()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    proxy: {
+      '/api/v1': {
+        target: 'https://openrouter.ai',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 })

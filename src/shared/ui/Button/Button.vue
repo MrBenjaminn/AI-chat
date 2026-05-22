@@ -1,31 +1,23 @@
-<script setup>
-
-</script>
-
-
+<script setup></script>
 
 <template>
-    <button
-        class="button"
-        :class="className"
-    >
-      <slot></slot>
-    </button>
+  <button class="button">
+    <slot name="icon"></slot>
+    <slot></slot>
+  </button>
 </template>
-
-
 
 <style lang="css" scoped>
 .button {
-  background: linear-gradient(var(--primary-color), 95%, #2174FD, #213BFD);
+  background: linear-gradient(var(--primary-color), 95%, #2174fd, #213bfd);
   border-radius: var(--border-radius);
   border: 1px solid #1d60cf;
   color: var(--light-color);
   font-size: var(--small-font-size);
   padding: var(--small-padding) var(--default-padding);
   display: flex;
-  align-items:  center;
-  justify-content:  center;
+  align-items: center;
+  justify-content: center;
   box-shadow: var(--main-box-shadow);
 }
 
@@ -39,19 +31,22 @@
   font-weight: 400;
 }
 
-.button-side-bar{
+.button-side-bar {
   width: 248px;
   column-gap: 4px;
   margin-top: auto;
+  transition: width 0.6s ease;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.button-chat {
+.button-default-icon {
   height: 42px;
   width: 42px;
   padding: 0;
 }
 
-.button-send-message {
+.ai-chat__send-message {
   margin-left: auto;
   column-gap: 16px;
 }
