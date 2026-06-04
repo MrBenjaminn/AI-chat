@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import avatarUser from '@/shared/assets/images/AvatarUser.png'
-import avatarAssistant from '@/shared/assets/images/AvatarAssistant.png'
+import { routeNames } from '@/shared/config/routes.ts'
 
 export const storeData = defineStore('storeData', () => {
   const router = useRouter()
@@ -13,23 +12,11 @@ export const storeData = defineStore('storeData', () => {
   }
 
   function startNewChat() {
-    router.push('/home')
+    router.push({ name: routeNames.homePage })
   }
-
-  const currentUser = ref({
-    name: 'Mauro Sicard',
-    avatar: avatarUser,
-  })
-
-  const assistant = ref({
-    name: 'LanguageGUI',
-    avatar: avatarAssistant,
-  })
 
   return {
     startNewChat,
-    currentUser,
-    assistant,
     sideBarState,
     sideBarOut,
   }

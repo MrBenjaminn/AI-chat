@@ -2,14 +2,22 @@
 import iconSideBarOut from '@/shared/assets/icons/Side-Bar-Out.svg?component'
 import iconSideBarSettings from '@/shared/assets/icons/Side-Bar-Settings.svg?component'
 import iconPlus from '@/shared/assets/icons/Plus.svg?component'
+import {useChatActions} from '@/features/chat/model/ChatActions.ts'
+import {
+  ButtonVariant,
+} from "@/shared/ui/button/model/button.ts";
 
-import { ChatHistory } from '@/entities'
-import { AccountInfo } from '@/entities'
-import { ButtonSideBar } from '@/shared'
-import { Button } from '@/shared'
-import { storeData } from '@/store'
+import {ChatHistory} from '@/entities'
+import {AccountInfo} from '@/entities'
+import {Button} from '@/shared'
+import {storeData} from '@/store'
+import {useAuth} from '@/shared/stores/authStore.ts'
+
+const globalStore = storeData()
 
 const store = storeData()
+const data = useAuth()
+const chatActions = useChatActions()
 </script>
 
 <template>
@@ -19,33 +27,39 @@ const store = storeData()
   >
     <div class="side-bar__header">
       <AccountInfo
-        :userInfo="store.currentUser"
-        :sideBarState="store.sideBarState"
+        :userAvatar="data.currentUser.avatar"
+        :userName="store.sideBarState ? data.currentUser.name : null"
         class="accountSideBar"
       />
       <div class="action-buttons">
-        <ButtonSideBar
+        <Button
+          :variant="ButtonVariant.Secondary"
+          :size="null"
           label="SideBarOut"
-          @click.prevent="store.sideBarOut()"
+          @click.prevent="globalStore.sideBarOut()"
         >
-          <template #icon>
+          <template #icon-left>
             <iconSideBarOut />
           </template>
-        </ButtonSideBar>
-        <ButtonSideBar label="Settings">
-          <template #icon>
+        </Button>
+        <Button
+          :variant="ButtonVariant.Secondary"
+          label="Settings"
+          :size="null"
+        >
+          <template #icon-left>
             <iconSideBarSettings />
           </template>
-        </ButtonSideBar>
+        </Button>
       </div>
     </div>
     <ChatHistory :class="!store.sideBarState && 'chat-history-fade'" />
     <Button
+      @click.prevent="globalStore.startNewChat()"
+      :disabled="chatActions.isLlmLoading"
       class="button-side-bar"
-      @click.prevent="store.startNewChat()"
-      :disabled="store.isLlmLoading"
     >
-      <template #icon>
+      <template #icon-left>
         <iconPlus />
       </template>
       {{ store.sideBarState ? 'Start new chat' : null }}
@@ -62,33 +76,38 @@ const store = storeData()
   justify-content: space-between;
   align-items: start;
   padding: var(--medium-padding) var(--medium-padding) var(--default-padding);
-  transition: padding 0.6s ease;
+  transition: width 0.6s ease;
 }
 
 .side-bar__header {
   display: flex;
   align-items: center;
   column-gap: 45px;
-  transition:
-    flex-direction 0.6s ease,
-    row-gap 0.6s ease;
+  transition: flex-direction 0.6s ease,
+  row-gap 0.6s ease;
 }
 
 .action-buttons {
   display: flex;
   column-gap: 6px;
-  transition:
-    flex-direction 0.6s ease,
-    row-gap 0.6s ease;
+  transition: flex-direction 0.6s ease,
+  row-gap 0.6s ease;
 }
 
 .chat-history-fade {
   opacity: 1;
   visibility: visible;
   overflow: hidden;
-  transition:
-    opacity 0.2s ease,
-    visibility 0.2s ease;
+  transition: opacity 0.2s ease,
+  visibility 0.2s ease;
+}
+
+.button-side-bar {
+  width: 248px;
+  margin-top: auto;
+  transition: width 0.6s ease;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .side-bar-out {
@@ -114,9 +133,8 @@ const store = storeData()
   & .chat-history-fade {
     opacity: 0;
     visibility: hidden;
-    transition:
-      opacity 0.25s ease 0.35s,
-      visibility 0.25s ease 0.35s;
+    transition: opacity 0.25s ease 0.35s,
+    visibility 0.25s ease 0.35s;
     overflow: hidden;
     white-space: nowrap;
   }

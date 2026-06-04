@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { Message } from '@/entities'
-import { SendMessage } from '@/features'
-import { storeData } from '@/store.ts'
+import {Message} from '@/entities'
+import {SendMessage} from '@/features'
+import {format} from "date-fns";
+import { ref } from 'vue'
 
-const store = storeData()
+const createDateChat = ref(new Date())
+
+const formatedTime = format(createDateChat.value, "hh:mm")
 </script>
 
 <template>
   <div class="ai-chat">
-    <span class="ai-chat__date"> Today ... PM </span>
+    <span class="ai-chat__date" v-once> Today {{formatedTime}} PM </span>
     <Message />
     <SendMessage />
   </div>
@@ -20,7 +23,7 @@ const store = storeData()
   flex-direction: column;
   align-items: center;
   row-gap: 40px;
-  padding: 40px clamp(120px, 19.44vw, 280px);
+  padding: 30px clamp(120px, 19.44vw, 280px);
   background-color: var(--light-color);
   border-radius: var(--regular-radius);
 

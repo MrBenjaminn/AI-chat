@@ -17,7 +17,6 @@
   margin-right: auto;
 }
 
-
 .dots-bubble {
   background-color: #f1f1f4;
   padding: 12px 20px;
@@ -29,7 +28,6 @@
   box-sizing: border-box;
 }
 
-
 .dot {
   width: 8px;
   height: 8px;
@@ -39,7 +37,6 @@
   animation: bounce 1.4s infinite ease-in-out both;
 }
 
-
 .dot:nth-child(1) {
   animation-delay: -0.32s;
 }
@@ -48,9 +45,10 @@
   animation-delay: -0.16s;
 }
 
-
 @keyframes bounce {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
     opacity: 0.3;
   }

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import PaperPlaneSmall from '@/shared/assets/icons/Paper-Plane-Small.svg'
 import { Button } from '@/shared'
-import { useChatActions } from './model/ChatActions.ts'
+import { useChatActions } from '@/features/chat/model/ChatActions.ts'
+import {
+  ButtonSize,
+  ButtonType
+} from "@/shared/ui/button/model/button.ts";
 
 const chatActions = useChatActions()
-
 </script>
 
 <template>
@@ -28,8 +31,10 @@ const chatActions = useChatActions()
       class="ai-chat__send-message"
       @click.prevent="chatActions.sendAsk()"
       :disabled="chatActions.isLlmLoading || !chatActions.llmAskText"
+      :type="ButtonType.Submit"
+      :size="ButtonSize.Small"
     >
-      <template #icon>
+      <template #icon-left>
         <PaperPlaneSmall />
       </template>
       Send message
@@ -66,5 +71,9 @@ hr {
   border: none;
   margin: 0;
   height: 1px;
+}
+
+.ai-chat__send-message {
+  margin-left: auto;
 }
 </style>

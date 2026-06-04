@@ -1,22 +1,18 @@
-<script setup>
-const props = defineProps({
-  userInfo: {
-    type: Object,
-  },
-  sideBarState: {
-    type: Boolean,
-  },
-})
+<script setup lang="ts">
+const props = defineProps<{
+  userAvatar?: string
+  userName?: string | null
+}>()
 </script>
 
 <template>
   <div class="account">
     <img
-      :src="userInfo.avatar"
+      :src="userAvatar"
       alt=""
       class="account__avatar"
     />
-    <p class="account__user-name">{{ sideBarState ? userInfo.name : null }}</p>
+    <p class="account__user-name">{{ userName }}</p>
   </div>
 </template>
 

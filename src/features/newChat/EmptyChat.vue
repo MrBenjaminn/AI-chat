@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import ButtonTelegram from '@/shared/assets/icons/Paper-Plane.svg?component'
-import { Button } from '@/shared'
+import Button from '@/shared/ui/button/Button.vue'
 import { useRouter } from 'vue-router'
-import { useChatActions } from "@/features/SendMessage/model/ChatActions.ts";
+import { useChatActions } from '@/features/chat/model/ChatActions.ts'
+import { routeNames } from '@/shared/config/routes.ts'
+import { useChatStore } from '@/entities/chat/ChatStore.ts'
 
 const router = useRouter()
+const chatStore = useChatStore()
 const chatActions = useChatActions()
 function createNewChat() {
-  router.push('/chat')
   chatActions.sendAsk()
+  router.push({ name: routeNames.chat, params: { id: chatStore.chatActiveId } })
 }
 </script>
 
@@ -33,10 +36,10 @@ function createNewChat() {
         />
         <div class="chat-card__button-wrapper">
           <Button
-            class="button-default-icon"
             @click.prevent="createNewChat"
+            onlyIcon
           >
-            <template #icon>
+            <template #icon-left>
               <ButtonTelegram />
             </template>
           </Button>

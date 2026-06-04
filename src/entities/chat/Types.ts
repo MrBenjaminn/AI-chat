@@ -8,6 +8,13 @@ export interface message {
   time: string
 }
 
+export interface chat {
+  id: string
+  title: string
+  createAt: number
+  updateAt: number
+}
+
 export interface messagesMap {
   [chatId: string]: message[]
 }

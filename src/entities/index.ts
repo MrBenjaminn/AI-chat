@@ -1,7 +1,6 @@
-import ChatHistory from '@/entities/ChatHistory/ChatHistory.vue'
-import Message from '@/entities/Message/Message.vue'
-import AccountInfo from '@/entities/AccountInfo/AccountInfo.vue'
-import type { chat } from '@/entities/ChatHistory/model/types'
-import type { message, messagesMap } from '@/entities/Message/Model/types.ts'
+import ChatHistory from '@/features/chat/ui/ChatHistory.vue'
+import Message from '@/features/chat/ui/Message.vue'
+import AccountInfo from '@/entities/account/AccountInfo.vue'
+import type { message, messagesMap, chat } from '@/entities/chat/Types.ts'
 
 export { ChatHistory, Message, AccountInfo, chat, message, messagesMap }

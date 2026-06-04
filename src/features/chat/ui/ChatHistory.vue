@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useChatStore } from './model/chatStore'
+import { useChatStore } from '@/entities/chat/ChatStore.ts'
+import { routeNames } from '@/shared/config/routes.ts'
 
-const chats = useChatStore()
-
+const chatStore = useChatStore()
 </script>
 
 <template>
@@ -19,12 +19,12 @@ const chats = useChatStore()
     >
       <li
         class="side-bar__chat-item"
-        v-for="item in chats.chatsList"
+        v-for="item in chatStore.chatsList"
         :key="item.id"
       >
         <router-link
           class="side-bar__chat-text"
-          :to="`/chat/${item.id}`"
+          :to="{ name: routeNames.chat, params: { id: item.id } }"
         >
           {{ item.title }}
         </router-link>

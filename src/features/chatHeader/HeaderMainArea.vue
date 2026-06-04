@@ -1,9 +1,8 @@
 <script setup>
-import Button from '../../shared/ui/Button/Button.vue'
+import Button from '@/shared/ui/button/Button.vue'
 import iconPlus from '@/shared/assets/icons/Plus.svg?component'
 import iconSideBarOut from '@/shared/assets/icons/Side-Bar-Out.svg?component'
 import { storeData } from '@/store'
-import { ButtonSideBar } from '@/shared/index'
 
 const store = storeData()
 </script>
@@ -11,21 +10,23 @@ const store = storeData()
 <template>
   <header class="header-chat">
     <h1 class="header-chat__title">Chats</h1>
-    <ButtonSideBar
+    <Button
       label="SideBarOut"
       @click.prevent="store.sideBarOut()"
+      variant="secondary"
       class="buttonSideBarOut"
     >
-      <template #icon>
+      <template #icon-left>
         <iconSideBarOut />
       </template>
-    </ButtonSideBar>
+    </Button>
     <Button
-      class="button-header"
+      variant="primary"
       @click="store.startNewChat()"
       :disabled="store.isLlmLoading"
+      size="small"
     >
-      <template #icon>
+      <template #icon-left>
         <iconPlus />
       </template>
       New Chat

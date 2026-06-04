@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useMessageStore } from './Model/MessageStore'
 import { AccountInfo } from '@/entities'
+import { useChatStore } from '@/entities/chat/ChatStore.ts'
 import { ref, watch, onMounted, nextTick } from 'vue'
-import { storeData } from "@/store";
-import { useChatActions } from "@/features/SendMessage/model/ChatActions";
-import TypingIndicator from "@/TypingIndicator.vue";
-import ErrorMessage from "@/ErrorMessage.vue";
+import { useAuth } from '@/shared/stores/authStore.ts'
+import { useChatActions } from '@/features/chat/model/ChatActions.ts'
+import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
+import ErrorMessage from '@/shared/ui/error/ErrorMessage.vue'
 
-const store = storeData()
-const messages = useMessageStore()
+const chatStore = useChatStore()
 const chatActions = useChatActions()
+const auth = useAuth()
 
 const messagesContainer = ref<HTMLElement | null>(null)
 function scrollToBottom() {
@@ -19,7 +19,7 @@ function scrollToBottom() {
 }
 
 watch(
-  () => messages.currentMessages,
+  () => chatStore.currentMessages,
   async () => {
     await nextTick()
     scrollToBottom()
@@ -33,15 +33,14 @@ onMounted(async () => {
 })
 
 interface Props {
-  type?: 'user' | 'assistant';
-  depth?: 0 | 1 | 2;
+  type?: 'user' | 'assistant'
+  depth?: 0 | 1 | 2
 }
 
 withDefaults(defineProps<Props>(), {
   type: 'assistant',
   depth: 0,
-});
-
+})
 </script>
 
 <template>
@@ -52,13 +51,14 @@ withDefaults(defineProps<Props>(), {
     <div
       class="ai-chat__message"
       :class="item.role === 'assistant' ? 'assistant' : null"
-      v-for="item in messages.currentMessages"
+      v-for="item in chatStore.currentMessages"
       :key="item.id"
     >
       <div class="ai-chat__sender-info">
         <AccountInfo
           style="column-gap: 12px"
-          :userInfo="item.role === 'user' ? store.currentUser : store.assistant"
+          :userName="item.role === 'user' ? auth.currentUser.name : auth.assistant.name"
+          :userAvatar="item.role === 'user' ? auth.currentUser.avatar : auth.assistant.avatar"
         />
         <span class="ai-chat__sender-date"> {{ item.time }} PM </span>
       </div>
@@ -66,9 +66,9 @@ withDefaults(defineProps<Props>(), {
         {{ item.content }}
       </p>
       <ErrorMessage
-          :role="item.role"
-          :appStatus="item.status"
-          :currentMessage="item"
+        :role="item.role"
+        :appStatus="item.status"
+        :currentMessage="item"
       />
     </div>
 
@@ -138,10 +138,10 @@ withDefaults(defineProps<Props>(), {
   left: -12px;
 }
 
- .fade-enter-active,
- .fade-leave-active {
-   transition: opacity 0.25s ease;
- }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
 
 .fade-enter-from,
 .fade-leave-to {

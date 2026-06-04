@@ -1,10 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { EmptyChat } from '@/features'
-import { ChatPages } from '@/widgets'
 
 const routes = [
-  { path: '/home', component: EmptyChat, alias: '/' },
-  { path: '/chat/:id?', component: ChatPages },
+  {
+    path: '/home',
+    name: 'home-page',
+    component: () => import('@/features/newChat/EmptyChat.vue'),
+    alias: '/',
+  },
+  { path: '/chat/:id', name: 'chat', component: () => import('@/widgets/ChatPages.vue') },
+  { path: '/login', name: 'login-page', component: () => import('@/pages/LoginPage.vue') },
 ]
 
 const router = createRouter({
