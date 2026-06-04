@@ -3,19 +3,17 @@ import iconSideBarOut from '@/shared/assets/icons/Side-Bar-Out.svg?component'
 import iconSideBarSettings from '@/shared/assets/icons/Side-Bar-Settings.svg?component'
 import iconPlus from '@/shared/assets/icons/Plus.svg?component'
 import {useChatActions} from '@/features/chat/model/ChatActions.ts'
-import {
-  ButtonVariant,
-} from "@/shared/ui/button/model/button.ts";
+import {ButtonVariant} from "@/shared/ui/button/model/button.ts";
+import {useGlobalAppState} from "@/shared/lib/state/useGlobalAppState.ts"
 
 import {ChatHistory} from '@/entities'
 import {AccountInfo} from '@/entities'
 import {Button} from '@/shared'
-import {storeData} from '@/store'
 import {useAuth} from '@/shared/stores/authStore.ts'
 
-const globalStore = storeData()
+const { sideBarState, sideBarOut, startNewChat } = useGlobalAppState()
 
-const store = storeData()
+
 const data = useAuth()
 const chatActions = useChatActions()
 </script>
@@ -23,12 +21,12 @@ const chatActions = useChatActions()
 <template>
   <aside
     class="side-bar"
-    :class="!store.sideBarState && 'side-bar-out'"
+    :class="!sideBarState && 'side-bar-out'"
   >
     <div class="side-bar__header">
       <AccountInfo
         :userAvatar="data.currentUser.avatar"
-        :userName="store.sideBarState ? data.currentUser.name : null"
+        :userName="sideBarState ? data.currentUser.name : null"
         class="accountSideBar"
       />
       <div class="action-buttons">
@@ -36,7 +34,7 @@ const chatActions = useChatActions()
           :variant="ButtonVariant.Secondary"
           :size="null"
           label="SideBarOut"
-          @click.prevent="globalStore.sideBarOut()"
+          @click.prevent="sideBarOut()"
         >
           <template #icon-left>
             <iconSideBarOut />
@@ -53,16 +51,16 @@ const chatActions = useChatActions()
         </Button>
       </div>
     </div>
-    <ChatHistory :class="!store.sideBarState && 'chat-history-fade'" />
+    <ChatHistory :class="!sideBarState && 'chat-history-fade'" />
     <Button
-      @click.prevent="globalStore.startNewChat()"
+      @click.prevent="startNewChat()"
       :disabled="chatActions.isLlmLoading"
       class="button-side-bar"
     >
       <template #icon-left>
         <iconPlus />
       </template>
-      {{ store.sideBarState ? 'Start new chat' : null }}
+      {{ sideBarState ? 'Start new chat' : null }}
     </Button>
   </aside>
 </template>

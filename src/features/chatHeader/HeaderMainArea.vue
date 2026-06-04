@@ -2,9 +2,10 @@
 import Button from '@/shared/ui/button/Button.vue'
 import iconPlus from '@/shared/assets/icons/Plus.svg?component'
 import iconSideBarOut from '@/shared/assets/icons/Side-Bar-Out.svg?component'
-import { storeData } from '@/store'
+import {useGlobalAppState} from '@/shared/lib/state/useGlobalAppState.ts'
+import {isLlmLoading} from '@/features/chat/api/api.ts'
 
-const store = storeData()
+const globalState = useGlobalAppState()
 </script>
 
 <template>
@@ -12,7 +13,7 @@ const store = storeData()
     <h1 class="header-chat__title">Chats</h1>
     <Button
       label="SideBarOut"
-      @click.prevent="store.sideBarOut()"
+      @click.prevent="globalState.sideBarOut()"
       variant="secondary"
       class="buttonSideBarOut"
     >
@@ -22,8 +23,8 @@ const store = storeData()
     </Button>
     <Button
       variant="primary"
-      @click="store.startNewChat()"
-      :disabled="store.isLlmLoading"
+      @click="globalState.startNewChat()"
+      :disabled="isLlmLoading"
       size="small"
     >
       <template #icon-left>

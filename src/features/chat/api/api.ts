@@ -2,13 +2,13 @@ import {apiInstance} from "@/shared/api/base.ts";
 import {ref} from "vue";
 import { useChatStore } from '@/entities/chat/ChatStore.ts'
 
-const chatStore = useChatStore()
 export const errorMessage = ref<string>('')
 export const isLlmLoading = ref<boolean>(false)
 
 export async function responseApi(text: string, userMsg: any, chatId: string) {
   isLlmLoading.value = true
   errorMessage.value = ''
+  const chatStore = useChatStore()
 
   try {
     const model = import.meta.env.VITE_OPENROUTER_MODEL
