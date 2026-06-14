@@ -2,20 +2,17 @@
 import iconSideBarOut from '@/shared/assets/icons/Side-Bar-Out.svg?component'
 import iconSideBarSettings from '@/shared/assets/icons/Side-Bar-Settings.svg?component'
 import iconPlus from '@/shared/assets/icons/Plus.svg?component'
-import {useChatActions} from '@/features/chat/model/ChatActions.ts'
-import {ButtonVariant} from "@/shared/ui/button/model/button.ts";
-import {useGlobalAppState} from "@/shared/lib/state/useGlobalAppState.ts"
+import { ButtonVariant } from '@/shared/ui/button/model/button.js'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.js'
 
-import {ChatHistory} from '@/entities'
-import {AccountInfo} from '@/entities'
-import {Button} from '@/shared'
-import {useAuth} from '@/shared/stores/authStore.ts'
+import { ChatHistory } from '@/features/chat'
+import { AccountInfo } from '@/entities/account'
+import { Button } from '@/shared'
+import { useAuth } from '@/shared/stores/authStore.js'
 
-const { sideBarState, sideBarOut, startNewChat } = useGlobalAppState()
-
+const { sideBarState, sideBarOut, startNewChat, isLlmLoading } = useGlobalAppState()
 
 const data = useAuth()
-const chatActions = useChatActions()
 </script>
 
 <template>
@@ -27,7 +24,7 @@ const chatActions = useChatActions()
       <AccountInfo
         :userAvatar="data.currentUser.avatar"
         :userName="sideBarState ? data.currentUser.name : null"
-        class="accountSideBar"
+        size="account--small"
       />
       <div class="action-buttons">
         <Button
@@ -54,7 +51,7 @@ const chatActions = useChatActions()
     <ChatHistory :class="!sideBarState && 'chat-history-fade'" />
     <Button
       @click.prevent="startNewChat()"
-      :disabled="chatActions.isLlmLoading"
+      :disabled="isLlmLoading"
       class="button-side-bar"
     >
       <template #icon-left>
@@ -81,23 +78,26 @@ const chatActions = useChatActions()
   display: flex;
   align-items: center;
   column-gap: 45px;
-  transition: flex-direction 0.6s ease,
-  row-gap 0.6s ease;
+  transition:
+    flex-direction 0.6s ease,
+    row-gap 0.6s ease;
 }
 
 .action-buttons {
   display: flex;
   column-gap: 6px;
-  transition: flex-direction 0.6s ease,
-  row-gap 0.6s ease;
+  transition:
+    flex-direction 0.6s ease,
+    row-gap 0.6s ease;
 }
 
 .chat-history-fade {
   opacity: 1;
   visibility: visible;
   overflow: hidden;
-  transition: opacity 0.2s ease,
-  visibility 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
 }
 
 .button-side-bar {
@@ -131,8 +131,9 @@ const chatActions = useChatActions()
   & .chat-history-fade {
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.25s ease 0.35s,
-    visibility 0.25s ease 0.35s;
+    transition:
+      opacity 0.25s ease 0.35s,
+      visibility 0.25s ease 0.35s;
     overflow: hidden;
     white-space: nowrap;
   }

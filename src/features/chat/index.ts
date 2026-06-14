@@ -1,0 +1,6 @@
+export { default as ChatHistory } from '@/features/chat/ui/ChatHistory.vue'
+export { default as Message } from '@/features/chat/ui/Message.vue'
+export { default as SendMessage } from '@/features/chat/ui/SendMessage.vue'
+export { default as ErrorMessage } from '@/features/chat/ui/ErrorMessage.vue'
+export { default as HeaderMainArea } from '../chat/ui/HeaderMainArea.vue'
+export { default as EmptyChat } from '../chat/ui/EmptyChat.vue'

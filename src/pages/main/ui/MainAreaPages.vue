@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { HeaderMainArea } from '@/features'
-import CloseSidebarOverlay from '@/shared/ui/overlay/CloseSidebarOverlay.vue'
+import { EmptyChat, HeaderMainArea } from '@/features/chat'
+import { CloseSidebarOverlay, SideBar } from '@/widgets/sidebar'
+import { useChatActions } from '@/features/chat/model/useChatActions.ts'
+import { ChatPages } from '@/widgets/chatpage'
+
+const chatActions = useChatActions()
 </script>
 
 <template>
+  <SideBar />
   <main class="main-area-wrapper">
     <CloseSidebarOverlay />
     <HeaderMainArea />
-    <RouterView />
+    <component :is="chatActions.chatActiveId.value ? ChatPages : EmptyChat" />
   </main>
 </template>
 
@@ -20,7 +25,7 @@ import CloseSidebarOverlay from '@/shared/ui/overlay/CloseSidebarOverlay.vue'
   border-radius: var(--regular-radius);
   height: 98vh;
   background-color: var(--light-color);
-  background-image: url('@/shared/assets/images/Background-Wrapper-Chat.svg');
+  background-image: url('@shared/assets/images/Background-Wrapper-Chat.svg');
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: cover;

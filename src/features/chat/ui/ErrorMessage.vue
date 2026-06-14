@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { useChatActions } from '@/features/chat/model/ChatActions.ts'
-import iconRetrySend from '@/shared/assets/icons/RetrySend.svg?component'
-import type { message } from '@/entities'
+import { useChatActions } from '@features/chat/model/useChatActions.js'
+import { useGlobalAppState } from '@shared/lib/state/useGlobalAppState.js'
+import iconRetrySend from '@shared/assets/icons/RetrySend.svg?component'
+import type { MessageType } from 'entities/chat'
 
-const props = defineProps<{
+defineProps<{
   role?: string
   appStatus?: string
-  currentMessage?: message
+  currentMessage?: MessageType
 }>()
 const chatActions = useChatActions()
+const globalState = useGlobalAppState()
 </script>
 
 <template>
@@ -20,7 +22,7 @@ const chatActions = useChatActions()
     <button
       @click="chatActions.retrySend(currentMessage)"
       class="retry-action-btn"
-      :disabled="chatActions.isLlmLoading"
+      :disabled="globalState.isLlmLoading.value"
     >
       <iconRetrySend />
     </button>

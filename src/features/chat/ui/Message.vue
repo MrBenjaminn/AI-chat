@@ -1,44 +1,39 @@
 <script setup lang="ts">
-import { AccountInfo } from '@/entities'
-import { useChatStore } from '@/entities/chat/ChatStore.ts'
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { AccountInfo } from '@/entities/account'
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
 import { useAuth } from '@/shared/stores/authStore.ts'
-import { useChatActions } from '@/features/chat/model/ChatActions.ts'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
+import { ErrorMessage } from '@/features/chat'
+import { watch, onMounted, nextTick } from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
-import ErrorMessage from '@/shared/ui/error/ErrorMessage.vue'
+import { roleSender } from '@/entities/chat/types'
+import { useChatActions } from '@/features/chat/model/useChatActions.ts'
 
 const chatStore = useChatStore()
-const chatActions = useChatActions()
 const auth = useAuth()
-
-const messagesContainer = ref<HTMLElement | null>(null)
-function scrollToBottom() {
-  if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-  }
-}
+const globalState = useGlobalAppState()
+const chatActions = useChatActions()
 
 watch(
-  () => chatStore.currentMessages,
+  () => chatStore.currentMessages.length,
   async () => {
     await nextTick()
-    scrollToBottom()
+    chatActions.scrollToBottom()
   },
-  { deep: true },
 )
 
 onMounted(async () => {
   await nextTick()
-  scrollToBottom()
+  chatActions.scrollToBottom()
 })
 
 interface Props {
-  type?: 'user' | 'assistant'
+  type?: roleSender.user | roleSender.assistant
   depth?: 0 | 1 | 2
 }
 
 withDefaults(defineProps<Props>(), {
-  type: 'assistant',
+  type: roleSender.assistant,
   depth: 0,
 })
 </script>
@@ -49,14 +44,13 @@ withDefaults(defineProps<Props>(), {
     class="ai-chat__message-item"
   >
     <div
-      class="ai-chat__message"
-      :class="item.role === 'assistant' ? 'assistant' : null"
+      :class="{ 'ai-chat__message--assistant': item.role === 'assistant' }"
       v-for="item in chatStore.currentMessages"
       :key="item.id"
     >
       <div class="ai-chat__sender-info">
         <AccountInfo
-          style="column-gap: 12px"
+          size="account--default"
           :userName="item.role === 'user' ? auth.currentUser.name : auth.assistant.name"
           :userAvatar="item.role === 'user' ? auth.currentUser.avatar : auth.assistant.avatar"
         />
@@ -73,7 +67,7 @@ withDefaults(defineProps<Props>(), {
     </div>
 
     <transition name="fade">
-      <TypingIndicator v-if="chatActions.isLlmLoading" />
+      <TypingIndicator v-if="globalState.isLlmLoading.value" />
     </transition>
   </div>
 </template>

@@ -13,6 +13,5 @@ export const useAuth = defineStore('auth', () => {
     name: 'LanguageGUI',
     avatar: avatarAssistant,
   })
-
   return { currentUser, assistant }
 })

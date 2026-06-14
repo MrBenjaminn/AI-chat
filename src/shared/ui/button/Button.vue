@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import type {
-  ButtonProps,
-} from "@/shared/ui/button/model/button.ts";
-import {
-  ButtonVariant,
-  ButtonSize,
-  ButtonType
-} from "@/shared/ui/button/model/button.ts";
-import { computed } from "vue";
+import type { ButtonProps } from '@/shared/ui/button/model/button.ts'
+import { ButtonVariant, ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<ButtonProps>(), {
   variant: ButtonVariant.Primary,
@@ -24,11 +18,10 @@ const buttonClasses = computed(() => {
     `base-button--${props.size}`,
     {
       'base-button--only-icon': props.onlyIcon,
-      'base-button--disabled': props.disabled
-    }
+      'base-button--disabled': props.disabled,
+    },
   ]
 })
-
 </script>
 
 <template>
@@ -82,22 +75,19 @@ const buttonClasses = computed(() => {
   background-color: var(--background-hover);
 }
 
-.base-button--small{
+.base-button--small {
   height: 32px;
   padding: var(--small-padding) var(--default-padding);
 }
 
-.base-button--default{
+.base-button--default {
   height: 42px;
   padding: var(--regular-padding) var(--default-padding);
 }
 
-
-.base-button--icon-default{
+.base-button--only-icon {
   width: 42px;
   height: 42px;
   padding: 0;
 }
-
-
 </style>

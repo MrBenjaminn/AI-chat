@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import {Message} from '@/entities'
-import {SendMessage} from '@/features'
-import {format} from "date-fns";
-import { ref } from 'vue'
+import { Message } from '@/features/chat'
+import { SendMessage } from '@/features/chat'
+import { format } from 'date-fns'
+import { computed } from 'vue'
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
 
-const createDateChat = ref(new Date())
+const chatStore = useChatStore()
 
-const formatedTime = format(createDateChat.value, "hh:mm")
+const currentCreateChatTime = computed(() => {
+  const currentTimeStep = chatStore.activeChat?.createAt
+  const dateString = format(new Date(currentTimeStep), 'dd.MM.yyyy HH:mm')
+  return dateString
+})
 </script>
 
 <template>
   <div class="ai-chat">
-    <span class="ai-chat__date" v-once> Today {{formatedTime}} PM </span>
+    <span class="ai-chat__date"> Create {{ currentCreateChatTime }} PM </span>
     <Message />
     <SendMessage />
   </div>

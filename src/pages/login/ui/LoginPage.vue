@@ -1,20 +1,15 @@
 <script setup lang="ts">
 import { Button } from '@/shared'
-import { Buffer } from 'buffer'
+import { useLoginStore } from '@pages/login/model/useLoginStore.js'
 
-async function createSHA256CodeChallenge(input: string) {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(input)
-  const hash = await crypto.subtle.digest('SHA-256', data)
-  return Buffer.from(hash).toString('base64url')
-}
+const loginStore = useLoginStore()
 </script>
 
 <template>
   <div class="login-wrapper">
     <Button
       class="primary"
-      href="https://openrouter.ai/auth?callback_url=<http://localhost:5173>&code_challenge=<CODE_CHALLENGE>&code_challenge_method=S256"
+      @click="loginStore.startAuth()"
     >
       Login
     </Button>

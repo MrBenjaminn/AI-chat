@@ -1,13 +1,27 @@
 <script setup lang="ts">
 import PaperPlaneSmall from '@/shared/assets/icons/Paper-Plane-Small.svg'
 import { Button } from '@/shared'
-import { useChatActions } from '@/features/chat/model/ChatActions.ts'
-import {
-  ButtonSize,
-  ButtonType
-} from "@/shared/ui/button/model/button.ts";
+import { useChatActions } from '@/features/chat/model/useChatActions.ts'
+import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
+import { ref, computed } from 'vue'
 
 const chatActions = useChatActions()
+const globalState = useGlobalAppState()
+
+const llmAskText = ref<string>('')
+
+const sendMessage = async () => {
+  const text = llmAskText.value
+  const currentChatId = chatActions.chatActiveId.value
+  if (!currentChatId) return
+  llmAskText.value = ''
+  await chatActions.sendAsk(text)
+}
+
+const isSubmitDisabled = computed(() => {
+  return Boolean(globalState.isLlmLoading || !llmAskText.value.trim())
+})
 </script>
 
 <template>
@@ -23,14 +37,14 @@ const chatActions = useChatActions()
       rows="10"
       class="input ai-chat__input-message"
       placeholder="How can I help you?"
-      v-model="chatActions.llmAskText"
-      @keydown.enter.exact.prevent="chatActions.sendAsk()"
+      v-model="llmAskText"
+      @keydown.enter.exact.prevent="sendMessage"
     ></textarea>
     <hr />
     <Button
       class="ai-chat__send-message"
-      @click.prevent="chatActions.sendAsk()"
-      :disabled="chatActions.isLlmLoading || !chatActions.llmAskText"
+      @click.prevent="sendMessage"
+      :disabled="isSubmitDisabled"
       :type="ButtonType.Submit"
       :size="ButtonSize.Small"
     >

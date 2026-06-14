@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useChatStore } from '@/entities/chat/ChatStore.ts'
-import { routeNames } from '@/shared/config/routes.ts'
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
+import { RouteNames } from '@/shared'
 
 const chatStore = useChatStore()
+const routes = RouteNames
 </script>
 
 <template>
@@ -24,7 +25,7 @@ const chatStore = useChatStore()
       >
         <router-link
           class="side-bar__chat-text"
-          :to="{ name: routeNames.chat, params: { id: item.id } }"
+          :to="{ name: routes.chat, params: { id: item.id } }"
         >
           {{ item.title }}
         </router-link>

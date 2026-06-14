@@ -1,9 +1,8 @@
-<script setup>
-import Button from '@/shared/ui/button/Button.vue'
-import iconPlus from '@/shared/assets/icons/Plus.svg?component'
-import iconSideBarOut from '@/shared/assets/icons/Side-Bar-Out.svg?component'
-import {useGlobalAppState} from '@/shared/lib/state/useGlobalAppState.ts'
-import {isLlmLoading} from '@/features/chat/api/api.ts'
+<script setup lang="ts">
+import { Button } from '@/shared'
+import iconPlus from '@shared/assets/icons/Plus.svg?component'
+import iconSideBarOut from '@shared/assets/icons/Side-Bar-Out.svg?component'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
 
 const globalState = useGlobalAppState()
 </script>
@@ -24,7 +23,7 @@ const globalState = useGlobalAppState()
     <Button
       variant="primary"
       @click="globalState.startNewChat()"
-      :disabled="isLlmLoading"
+      :disabled="globalState.isLlmLoading.value"
       size="small"
     >
       <template #icon-left>

@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import {useGlobalAppState} from '@/shared/lib/state/useGlobalAppState.ts'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
 
 const globalState = useGlobalAppState()
-
 </script>
 
 <template>
   <div
-    v-if="globalState.sideBarState"
+    v-if="globalState.sideBarState.value"
     class="sidebar-overlay"
-    @click="globalState.sideBarState = false"
+    @click="globalState.sideBarOut()"
   ></div>
 </template>
 

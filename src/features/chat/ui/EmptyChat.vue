@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import ButtonTelegram from '@/shared/assets/icons/Paper-Plane.svg?component'
-import Button from '@/shared/ui/button/Button.vue'
+import ButtonTelegram from '@shared/assets/icons/Paper-Plane.svg?component'
+import { Button } from '@/shared'
 import { useRouter } from 'vue-router'
-import { useChatActions } from '@/features/chat/model/ChatActions.ts'
-import { routeNames } from '@/shared/config/routes.ts'
-import { useChatStore } from '@/entities/chat/ChatStore.ts'
+import { useChatActions } from '@/features/chat/model/useChatActions.ts'
+import { RouteNames } from '@/shared'
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
+import { ref } from 'vue'
 
 const router = useRouter()
 const chatStore = useChatStore()
 const chatActions = useChatActions()
-function createNewChat() {
-  chatActions.sendAsk()
-  router.push({ name: routeNames.chat, params: { id: chatStore.chatActiveId } })
+
+const llmAskText = ref<string>('')
+
+async function createNewChat() {
+  const text = llmAskText.value
+  const newIdChat = crypto.randomUUID()
+  chatStore.createNewChat(newIdChat, text)
+  llmAskText.value = ''
+  await router.push({ name: RouteNames.chat, params: { id: newIdChat } })
+  await chatActions.sendAsk(text)
 }
 </script>
 
@@ -31,7 +39,7 @@ function createNewChat() {
           class="input"
           id="chat-input"
           placeholder="How can i help you?"
-          v-model="chatActions.llmAskText"
+          v-model="llmAskText"
           @keydown.enter.prevent="createNewChat"
         />
         <div class="chat-card__button-wrapper">
@@ -67,7 +75,7 @@ function createNewChat() {
   justify-content: center;
   row-gap: 10px;
   margin: auto;
-  background-image: url('@/shared/assets/images/Background-Chat.svg');
+  background-image: url('@shared/assets/images/Background-Chat.svg');
   background-repeat: no-repeat;
   background-position: center bottom;
 }

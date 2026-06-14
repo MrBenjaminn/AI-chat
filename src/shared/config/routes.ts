@@ -1,5 +1,5 @@
-export enum routeNames {
-  homePage= 'home-page',
-  chat= 'chat',
-  loginPage= 'login-page',
+export enum RouteNames {
+  homePage = 'home-page',
+  chat = 'chat',
+  loginPage = 'login-page',
 }

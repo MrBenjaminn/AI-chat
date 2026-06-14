@@ -1,18 +1,18 @@
-export enum ButtonVariant  {
-  Primary= 'primary',
-  Secondary= 'secondary',
-  Tertiary= 'tertiary',
+export enum ButtonVariant {
+  Primary = 'primary',
+  Secondary = 'secondary',
+  Tertiary = 'tertiary',
 }
 
 export enum ButtonSize {
-  Small= 'small',
-  Default= 'default',
+  Small = 'small',
+  Default = 'default',
 }
 
 export enum ButtonType {
-  Button= 'button',
-  Submit= 'submit',
-  Reset= 'reset',
+  Button = 'button',
+  Submit = 'submit',
+  Reset = 'reset',
 }
 
 export interface ButtonProps {

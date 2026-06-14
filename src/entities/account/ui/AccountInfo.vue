@@ -1,12 +1,16 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   userAvatar?: string
   userName?: string | null
+  size?: 'account--small' | 'account--default'
 }>()
 </script>
 
 <template>
-  <div class="account">
+  <div
+    class="account"
+    :class="size"
+  >
     <img
       :src="userAvatar"
       alt=""
@@ -21,6 +25,14 @@ const props = defineProps<{
   display: flex;
   column-gap: 8px;
   align-items: center;
+}
+
+.account--small {
+  column-gap: 8px;
+}
+
+.account--default {
+  column-gap: 12px;
 }
 
 .account__avatar {

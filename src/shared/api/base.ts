@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios'
 const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL
 const api = import.meta.env.VITE_OPENROUTER_API_KEY
 const openRouterTitle = import.meta.env.VITE_OPENROUTER_APP_TITLE
@@ -12,5 +12,5 @@ export const apiInstance = axios.create({
     'HTTP-Referer': `${referer}`,
     'X-OpenRouter-Title': `${openRouterTitle}`,
     'Content-Type': 'application/json',
-  }
+  },
 })
