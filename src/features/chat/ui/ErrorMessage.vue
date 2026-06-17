@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useChatActions } from '@features/chat/model/useChatActions.js'
-import { useGlobalAppState } from '@shared/lib/state/useGlobalAppState.js'
+import { useChatActions } from '../model/useChatActions'
+import { useGlobalAppState } from "@/shared/lib/state/useGlobalAppState";
 import iconRetrySend from '@shared/assets/icons/RetrySend.svg?component'
-import type { MessageType } from 'entities/chat'
+import type { MessageType } from "@/entities/chat";
 
 defineProps<{
   role?: string

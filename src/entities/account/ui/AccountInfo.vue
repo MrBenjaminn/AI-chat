@@ -2,7 +2,7 @@
 defineProps<{
   userAvatar?: string
   userName?: string | null
-  size?: 'account--small' | 'account--default'
+  size?: 'small' | 'default'
 }>()
 </script>
 
@@ -27,11 +27,11 @@ defineProps<{
   align-items: center;
 }
 
-.account--small {
+.small {
   column-gap: 8px;
 }
 
-.account--default {
+.default {
   column-gap: 12px;
 }
 

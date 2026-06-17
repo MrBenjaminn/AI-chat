@@ -50,8 +50,8 @@ export const useChatStore = defineStore('chatStore', () => {
     return chatsList.value.find((Chat) => Chat.id === chatActions.chatActiveId.value)
   })
 
-  function createNewChat(id: string, firstMesageText: string) {
-    const shortTitle = firstMesageText.slice(0, 27) + '...'
+  function createNewChat(id: string, firstMessageText: string) {
+    const shortTitle = firstMessageText.slice(0, 27) + '...'
 
     messagesMap.value = {
       ...messagesMap.value,

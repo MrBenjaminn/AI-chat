@@ -1,9 +1,9 @@
-import { apiInstance } from '@/shared/api/base.ts'
+import { apiInstanceChat } from '@/shared/api/base.ts'
 
 export async function responseApi(text: string): Promise<string> {
   const model = import.meta.env.VITE_OPENROUTER_MODEL
 
-  const response = await apiInstance.post('/completions', {
+  const response = await apiInstanceChat.post('/chat/completions', {
     model,
     messages: [{ role: 'user', content: text }],
     reasoning: { enabled: true },

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { AccountInfo } from '@/entities/account'
-import { useChatStore } from '@/entities/chat/useChatStore.ts'
-import { useAuth } from '@/shared/stores/authStore.ts'
-import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
+import { useChatStore } from '@/entities/chat/useChatStore'
+import { useLoginStore } from "@/shared/stores/useLoginStore";
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 import { ErrorMessage } from '@/features/chat'
 import { watch, onMounted, nextTick } from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
 import { roleSender } from '@/entities/chat/types'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
+import { useChatActions } from '@/features/chat/model/useChatActions'
 
 const chatStore = useChatStore()
-const auth = useAuth()
+const loginStore = useLoginStore()
 const globalState = useGlobalAppState()
 const chatActions = useChatActions()
 
@@ -44,15 +44,16 @@ withDefaults(defineProps<Props>(), {
     class="ai-chat__message-item"
   >
     <div
-      :class="{ 'ai-chat__message--assistant': item.role === 'assistant' }"
+      class="ai-chat__message"
+      :class="{ 'assistant': item.role === 'assistant' }"
       v-for="item in chatStore.currentMessages"
       :key="item.id"
     >
       <div class="ai-chat__sender-info">
         <AccountInfo
-          size="account--default"
-          :userName="item.role === 'user' ? auth.currentUser.name : auth.assistant.name"
-          :userAvatar="item.role === 'user' ? auth.currentUser.avatar : auth.assistant.avatar"
+          size="default"
+          :userName="item.role === 'user' ? loginStore.currentUser.name : loginStore.assistant.name"
+          :userAvatar="item.role === 'user' ? loginStore.currentUser.avatar : loginStore.assistant.avatar"
         />
         <span class="ai-chat__sender-date"> {{ item.time }} PM </span>
       </div>

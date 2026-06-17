@@ -8,11 +8,11 @@ import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.js'
 import { ChatHistory } from '@/features/chat'
 import { AccountInfo } from '@/entities/account'
 import { Button } from '@/shared'
-import { useAuth } from '@/shared/stores/authStore.js'
+import { useLoginStore } from "@/shared/stores/useLoginStore.ts";
 
 const { sideBarState, sideBarOut, startNewChat, isLlmLoading } = useGlobalAppState()
 
-const data = useAuth()
+const loginStore = useLoginStore()
 </script>
 
 <template>
@@ -22,9 +22,9 @@ const data = useAuth()
   >
     <div class="side-bar__header">
       <AccountInfo
-        :userAvatar="data.currentUser.avatar"
-        :userName="sideBarState ? data.currentUser.name : null"
-        size="account--small"
+        :userAvatar="loginStore.currentUser.avatar"
+        :userName="sideBarState ? loginStore.currentUser.name : null"
+        size="small"
       />
       <div class="action-buttons">
         <Button

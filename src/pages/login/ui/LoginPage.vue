@@ -1,17 +1,39 @@
 <script setup lang="ts">
 import { Button } from '@/shared'
-import { useLoginStore } from '@pages/login/model/useLoginStore.js'
+import { useLoginStore } from '@shared/stores/useLoginStore.js'
+import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
+import { RouteNames } from '@/shared'
+import { ErrorResponse } from "@/pages/login";
 
 const loginStore = useLoginStore()
+const urlParams = new URLSearchParams(window.location.search)
+const checkCode = urlParams.has('code')
+const router = useRouter()
+
+const handleAuth = async () => {
+  if (checkCode) {
+    await loginStore.callBackCode()
+
+    if (!loginStore.errorMessage) {
+      await router.push({ name: RouteNames.homePage })
+    }
+  }
+}
+
+onMounted(() => {
+  handleAuth()
+})
 </script>
 
 <template>
   <div class="login-wrapper">
+    <ErrorResponse v-if="loginStore.errorMessage" />
     <Button
       class="primary"
       @click="loginStore.startAuth()"
     >
-      Login
+      {{ !loginStore.errorMessage ? 'Login' : 'Login Again' }}
     </Button>
   </div>
 </template>
@@ -22,11 +44,18 @@ const loginStore = useLoginStore()
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: cover;
-  height: 100vh;
-  width: 100vw;
+  grid-column: 1/-1;
+  height: 100%;
+  width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  row-gap: 20px;
+  background-color: var(--light-color);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px 0 rgba(25, 33, 61, 0.1);
 }
 
 .primary {

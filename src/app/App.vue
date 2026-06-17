@@ -13,9 +13,9 @@ import './styles'
   position: relative;
   display: grid;
   grid-template-columns: 296px 1fr;
-  max-height: 100dvh;
+  height: 100dvh;
   width: 100%;
-  padding: 10px 10px 10px 0;
+  padding: 10px;
   transition: grid-template-columns 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

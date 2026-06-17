@@ -3,6 +3,7 @@ import { Button } from '@/shared'
 import iconPlus from '@shared/assets/icons/Plus.svg?component'
 import iconSideBarOut from '@shared/assets/icons/Side-Bar-Out.svg?component'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
+import { ButtonVariant, ButtonSize } from "@/shared/ui/button/model/button.ts";
 
 const globalState = useGlobalAppState()
 </script>
@@ -13,7 +14,7 @@ const globalState = useGlobalAppState()
     <Button
       label="SideBarOut"
       @click.prevent="globalState.sideBarOut()"
-      variant="secondary"
+      :variant="ButtonVariant.Secondary"
       class="buttonSideBarOut"
     >
       <template #icon-left>
@@ -21,10 +22,10 @@ const globalState = useGlobalAppState()
       </template>
     </Button>
     <Button
-      variant="primary"
+      :variant="ButtonVariant.Primary"
       @click="globalState.startNewChat()"
       :disabled="globalState.isLlmLoading.value"
-      size="small"
+      :size="ButtonSize.Small"
     >
       <template #icon-left>
         <iconPlus />

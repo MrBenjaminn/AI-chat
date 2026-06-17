@@ -1,26 +1,10 @@
 <script setup lang="ts">
 import ButtonTelegram from '@shared/assets/icons/Paper-Plane.svg?component'
 import { Button } from '@/shared'
-import { useRouter } from 'vue-router'
 import { useChatActions } from '@/features/chat/model/useChatActions.ts'
-import { RouteNames } from '@/shared'
-import { useChatStore } from '@/entities/chat/useChatStore.ts'
-import { ref } from 'vue'
 
-const router = useRouter()
-const chatStore = useChatStore()
 const chatActions = useChatActions()
 
-const llmAskText = ref<string>('')
-
-async function createNewChat() {
-  const text = llmAskText.value
-  const newIdChat = crypto.randomUUID()
-  chatStore.createNewChat(newIdChat, text)
-  llmAskText.value = ''
-  await router.push({ name: RouteNames.chat, params: { id: newIdChat } })
-  await chatActions.sendAsk(text)
-}
 </script>
 
 <template>
@@ -39,12 +23,12 @@ async function createNewChat() {
           class="input"
           id="chat-input"
           placeholder="How can i help you?"
-          v-model="llmAskText"
-          @keydown.enter.prevent="createNewChat"
+          v-model="chatActions.llmAskText.value"
+          @keydown.enter.prevent="chatActions.sendMessage"
         />
         <div class="chat-card__button-wrapper">
           <Button
-            @click.prevent="createNewChat"
+            @click.prevent="chatActions.sendMessage"
             onlyIcon
           >
             <template #icon-left>

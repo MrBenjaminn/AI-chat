@@ -4,14 +4,17 @@ import { responseApi } from '@/features/chat/api/api.ts'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
 import { messageStatus, roleSender } from '@/entities/chat/types'
 import type { MessageType } from '@/entities/chat'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import {RouteNames} from "@/shared";
 
 export function useChatActions() {
   const chatStore = useChatStore()
   const globalState = useGlobalAppState()
   const route = useRoute()
+  const router = useRouter()
 
   const errorMessage = ref<string>('')
+  const llmAskText = ref<string>('')
 
   const chatActiveId = computed(() => {
     const id = route.params.id
@@ -47,7 +50,7 @@ export function useChatActions() {
     }
   }
 
-  async function sendAsk(textToSend: string) {
+  async function createAsk(textToSend: string) {
     if (!textToSend.trim()) return
 
     const currentId = chatActiveId.value as string
@@ -75,6 +78,20 @@ export function useChatActions() {
     await processSendMessage(failedMessageObj.content, failedMessageObj, chatId)
   }
 
+  async function sendMessage() {
+    const currentChatId = chatActiveId.value
+    const text = llmAskText.value
+    llmAskText.value = ''
+    if (!currentChatId) {
+      const newIdChat = crypto.randomUUID()
+      chatStore.createNewChat(newIdChat, text)
+      await router.push({ name: RouteNames.chat, params: { id: newIdChat } })
+      await createAsk(text)
+    } else {
+      await createAsk(text)
+    }
+  }
+
   function scrollToBottom() {
     const messagesContainer = ref<HTMLElement | null>(null)
 
@@ -83,5 +100,13 @@ export function useChatActions() {
     }
   }
 
-  return { errorMessage, sendAsk, retrySend, scrollToBottom, chatActiveId }
+  return {
+    errorMessage,
+    createAsk,
+    retrySend,
+    scrollToBottom,
+    chatActiveId,
+    sendMessage,
+    llmAskText
+  }
 }

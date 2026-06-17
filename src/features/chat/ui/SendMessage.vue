@@ -4,23 +4,14 @@ import { Button } from '@/shared'
 import { useChatActions } from '@/features/chat/model/useChatActions.ts'
 import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 const chatActions = useChatActions()
 const globalState = useGlobalAppState()
 
-const llmAskText = ref<string>('')
-
-const sendMessage = async () => {
-  const text = llmAskText.value
-  const currentChatId = chatActions.chatActiveId.value
-  if (!currentChatId) return
-  llmAskText.value = ''
-  await chatActions.sendAsk(text)
-}
 
 const isSubmitDisabled = computed(() => {
-  return Boolean(globalState.isLlmLoading || !llmAskText.value.trim())
+  return Boolean(globalState.isLlmLoading || !chatActions.llmAskText.value.trim())
 })
 </script>
 
@@ -37,13 +28,13 @@ const isSubmitDisabled = computed(() => {
       rows="10"
       class="input ai-chat__input-message"
       placeholder="How can I help you?"
-      v-model="llmAskText"
-      @keydown.enter.exact.prevent="sendMessage"
+      v-model="chatActions.llmAskText.value"
+      @keydown.enter.exact.prevent="chatActions.sendMessage"
     ></textarea>
     <hr />
     <Button
       class="ai-chat__send-message"
-      @click.prevent="sendMessage"
+      @click.prevent="chatActions.sendMessage"
       :disabled="isSubmitDisabled"
       :type="ButtonType.Submit"
       :size="ButtonSize.Small"
