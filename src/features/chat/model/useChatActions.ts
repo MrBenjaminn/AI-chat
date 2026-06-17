@@ -92,19 +92,10 @@ export function useChatActions() {
     }
   }
 
-  function scrollToBottom() {
-    const messagesContainer = ref<HTMLElement | null>(null)
-
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-    }
-  }
-
   return {
     errorMessage,
     createAsk,
     retrySend,
-    scrollToBottom,
     chatActiveId,
     sendMessage,
     llmAskText

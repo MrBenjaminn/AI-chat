@@ -4,27 +4,34 @@ import { useChatStore } from '@/entities/chat/useChatStore'
 import { useLoginStore } from "@/shared/stores/useLoginStore";
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 import { ErrorMessage } from '@/features/chat'
-import { watch, onMounted, nextTick } from 'vue'
+import {watch, onMounted, nextTick, ref} from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
 import { roleSender } from '@/entities/chat/types'
-import { useChatActions } from '@/features/chat/model/useChatActions'
 
 const chatStore = useChatStore()
 const loginStore = useLoginStore()
 const globalState = useGlobalAppState()
-const chatActions = useChatActions()
+
+const messagesContainer = ref<HTMLElement | null>(null)
+
+function scrollToBottom() {
+
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+  }
+}
 
 watch(
   () => chatStore.currentMessages.length,
   async () => {
     await nextTick()
-    chatActions.scrollToBottom()
+    scrollToBottom()
   },
 )
 
 onMounted(async () => {
   await nextTick()
-  chatActions.scrollToBottom()
+  scrollToBottom()
 })
 
 interface Props {
