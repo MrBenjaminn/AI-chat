@@ -1,0 +1,26 @@
+:root {
+  --primary-color: #2b7afb;
+  --dark-color: #19213d;
+  --light-color: white;
+  --neutral-color: #666f8d;
+  --border-color: #f0f2f5;
+  --background-hover: #ceced3;
+
+  --border-radius: 8px;
+  --regular-radius: 16px;
+
+  --main-box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0.3px 0 rgba(14, 56, 125, 0.18),
+    0 2px 5px 0 rgba(20, 88, 201, 0.17);
+
+  --small-font-size: 12px;
+  --main-font-size: 14px;
+  --big-font-size: 16px;
+
+  --small-padding: 8px;
+  --regular-padding: 12px;
+  --default-padding: 16px;
+  --medium-padding: 24px;
+  --large-padding: 32px;
+  --extra-large-padding: 48px;
+}

@@ -1,0 +1,1 @@
+export const PKCE_KEY = 'pkce_data'
