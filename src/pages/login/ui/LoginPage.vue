@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/shared'
-import { useLoginStore } from '@shared/stores/useLoginStore.js'
+import { useLoginStore } from "@/shared/stores/useLoginStore";
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { RouteNames } from '@/shared'

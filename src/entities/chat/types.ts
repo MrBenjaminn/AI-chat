@@ -1,13 +1,3 @@
-export interface MessageType {
-  id: string
-  chatId: string
-  role: 'user' | 'assistant'
-  content: string
-  createdAt: number
-  status?: 'sent' | 'pending' | 'error'
-  time: string
-}
-
 export enum messageStatus {
   sent = 'sent',
   pending = 'pending',
@@ -20,6 +10,7 @@ export enum roleSender {
 }
 
 export interface createMessageParams {
+  files?: Attachments[];
   sender: roleSender
   contentText: string
   status: messageStatus
@@ -35,4 +26,32 @@ export interface Chat {
 
 export interface MessagesMap {
   [chatId: string]: MessageType[]
+}
+
+export interface Attachments {
+  id: string;
+  kind: 'audio' | 'video' | 'file' | 'image'
+  mimeType: string;
+  fileName: string;
+  size: number;
+  source: {
+    type: 'dataUrl' | 'base64' | 'url';
+    value: string;
+  };
+  meta?: {
+    durations?: number;
+    format?: string;
+  }
+  previewUrl?: string;
+}
+
+export interface MessageType {
+  attachments?: Attachments[]
+  id: string
+  chatId: string
+  role: roleSender
+  content: string
+  createdAt: number
+  status?: messageStatus
+  time: string
 }

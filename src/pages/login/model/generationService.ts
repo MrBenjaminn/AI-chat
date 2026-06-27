@@ -1,9 +1,16 @@
 
-  function convertToBase64Url(bites: Uint8Array): string {
+  export function finalBase64Url(result: string)  {
+    return result
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+  }
+
+  export function convertToBase64Url(bites: Uint8Array): string {
     const binaryString = String.fromCharCode(...bites)
     const base = btoa(binaryString)
 
-    return base.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+    return finalBase64Url(base)
   }
 
   export async function createSHA256CodeChallenge(input: string) {

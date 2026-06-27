@@ -1,17 +1,27 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { format } from 'date-fns'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
-import type { Chat, MessageType, MessagesMap, createMessageParams } from '@/entities/chat/index.ts'
+import type {
+  Chat,
+  MessageType,
+  MessagesMap,
+  createMessageParams, Attachments,
+} from '@/entities/chat/index.ts'
+import {finalBase64Url} from "@/pages/login/model/generationService.ts";
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatsList = ref<Chat[]>([])
   const messagesMap = ref<MessagesMap>({})
-  const chatActions = useChatActions()
+  const files = ref<Attachments[]>([])
+  const chatActiveId = ref<string | null>('')
 
   const STORAGE_KEY = 'llm_chat_app:v1'
 
   const rawData = localStorage.getItem(STORAGE_KEY)
+
+  function setActiveChat(id: string | null) {
+    chatActiveId.value = id
+  }
 
   if (rawData) {
     try {
@@ -47,7 +57,7 @@ export const useChatStore = defineStore('chatStore', () => {
   )
 
   const activeChat = computed(() => {
-    return chatsList.value.find((Chat) => Chat.id === chatActions.chatActiveId.value)
+    return chatsList.value.find((Chat) => Chat.id === chatActiveId.value)
   })
 
   function createNewChat(id: string, firstMessageText: string) {
@@ -76,9 +86,9 @@ export const useChatStore = defineStore('chatStore', () => {
   }
 
   const currentMessages = computed(() => {
-    if (!chatActions.chatActiveId.value) return []
+    if (!chatActiveId.value) return []
 
-    return messagesMap.value[chatActions.chatActiveId.value] || []
+    return messagesMap.value[chatActiveId.value] || []
   })
 
   function getTime() {
@@ -87,7 +97,9 @@ export const useChatStore = defineStore('chatStore', () => {
   }
 
   function createNewMessage(params: createMessageParams) {
+
     const linkMessage: MessageType = {
+      attachments: files.value,
       id: crypto.randomUUID(),
       chatId: params.chatId,
       role: params.sender,
@@ -109,6 +121,77 @@ export const useChatStore = defineStore('chatStore', () => {
     return linkMessage
   }
 
+  function currentTypeFile (file: File) {
+    if (file.type.startsWith('audio/')) return  'audio';
+    if (file.type.startsWith('video/')) return  'video';
+    if (file.type.includes('pdf')) return 'file';
+    if (file.type.startsWith('image/')) return  'image';
+    return null;
+  }
+
+  function readFiles (file: File): Promise<string> {
+
+    return new Promise((resolve, reject) => {
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+
+        const result = reader.result as string;
+        const interResult = result.split(',')[1]
+        const resultAudio = finalBase64Url(interResult)
+        const resultAnotherFiles = finalBase64Url(result)
+
+        if (currentTypeFile(file) === 'audio') {
+          resolve(resultAudio);
+        } else {
+          resolve(resultAnotherFiles);
+        }
+      };
+
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  }
+
+  async function handleAddFile(event: Event) {
+    const currentFile = event.target as HTMLInputElement
+
+
+    if (currentFile.files) {
+
+      for (const file of Array.from(currentFile.files)) {
+
+        const preview = URL.createObjectURL(file);
+        const kindType = currentTypeFile(file)
+        const currentBase = await readFiles(file)
+        if(!kindType) return
+
+
+        const newItem: Attachments = {
+          id: crypto.randomUUID(),
+          kind: kindType,
+          mimeType: file.type,
+          fileName: file.name,
+          size: file.size,
+          source: {
+            type: 'base64',
+            value: currentBase,
+          },
+          previewUrl: preview
+        }
+
+        files.value.push(newItem)
+      }
+    }
+  }
+
+  function deletePreviewFile(id: string) {
+    const currentIndexFile = files.value.findIndex((e) => e.id === id)
+    files.value.splice(currentIndexFile, 1)
+  }
+
   return {
     messagesMap,
     currentMessages,
@@ -117,5 +200,10 @@ export const useChatStore = defineStore('chatStore', () => {
     activeChat,
     createNewChat,
     entryChat,
+    files,
+    handleAddFile,
+    deletePreviewFile,
+    setActiveChat,
+    chatActiveId
   }
 })

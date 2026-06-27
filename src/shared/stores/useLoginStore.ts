@@ -5,11 +5,12 @@ import { createSHA256CodeChallenge, generateCodeVerifier } from '@/pages/login/m
 import { PKCE_KEY } from "@/pages/login/model/storage-key";
 import avatarUser from "@/shared/assets/images/AvatarUser.png";
 import avatarAssistant from "@/shared/assets/images/AvatarAssistant.png";
+import type {authState} from "@/pages/login/model/types.ts";
 
 export const useLoginStore = defineStore('loginStore', () => {
   const errorMessage = ref('')
   const url = import.meta.env.VITE_OPENROUTER_APP_URL
-  const isAuthenticated = ref(false)
+  const isAuthenticated = ref<boolean>(false)
 
   async function startAuth() {
     const codeVerifier = generateCodeVerifier()
@@ -31,11 +32,18 @@ export const useLoginStore = defineStore('loginStore', () => {
     try {
       const response = await responseApiKey(codeParam)
 
-      const key = response.key
-
       isAuthenticated.value = true
 
-      localStorage.setItem('userKey', key)
+      const date = Date.now()
+
+      const authData: authState = {
+        isAuthenticated: isAuthenticated.value,
+        userKey: response.key,
+        createdAt: String(date),
+        updatedAt: String(date)
+      }
+
+      localStorage.setItem('authState', JSON.stringify(authData))
 
       sessionStorage.removeItem(PKCE_KEY)
 

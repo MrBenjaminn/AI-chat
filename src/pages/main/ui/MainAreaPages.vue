@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { EmptyChat, HeaderMainArea } from '@/features/chat'
 import { CloseSidebarOverlay, SideBar } from '@/widgets/sidebar'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
 import { ChatPages } from '@/widgets/chatpage'
+import { useChatStore } from "@/entities/chat/useChatStore.ts";
 
-const chatActions = useChatActions()
+const chatStore = useChatStore()
 </script>
 
 <template>
@@ -12,7 +12,7 @@ const chatActions = useChatActions()
   <main class="main-area-wrapper">
     <CloseSidebarOverlay />
     <HeaderMainArea />
-    <component :is="chatActions.chatActiveId.value ? ChatPages : EmptyChat" />
+    <component :is="chatStore.chatActiveId ? ChatPages : EmptyChat" />
   </main>
 </template>
 
