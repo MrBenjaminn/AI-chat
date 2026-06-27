@@ -1,3 +1,13 @@
-import type { MessageType, MessagesMap, Chat, createMessageParams } from '@/entities/chat/types.ts'
+import type {
+  MessageType,
+  MessagesMap,
+  Chat,
+  createMessageParams,
+  Attachments } from '@/entities/chat/types.ts'
 
-export type { Chat, MessageType, MessagesMap, createMessageParams }
+export type {
+  Chat,
+  MessageType,
+  MessagesMap,
+  createMessageParams,
+  Attachments }

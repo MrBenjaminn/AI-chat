@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import ButtonTelegram from '@shared/assets/icons/Paper-Plane.svg?component'
 import { Button } from '@/shared'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
+import { useChatActions } from '@/features/chat/model/useChatActions'
+import { useChatStore } from "@/entities/chat/useChatStore";
+import AddFile from "@/shared/ui/add-file/AddFile.vue";
+import PreviewFileList from "@/shared/ui/add-file/PreviewFileList.vue";
+
 
 const chatActions = useChatActions()
+const chatStore = useChatStore()
+
 
 </script>
 
@@ -13,6 +19,9 @@ const chatActions = useChatActions()
       <h2 class="chat-card__title">Welcome back, Mauro</h2>
       <p class="chat-card__text">Lorem ipsum dolor sit amet consectetur adipiscing elit sed</p>
       <div class="chat-card__input-wrapper">
+        <PreviewFileList :class="{'ident': chatStore.files.length}"/>
+        <div class="chat-card__input-group">
+        <AddFile />
         <label
           for="chat-input"
           class="visually-hidden"
@@ -35,6 +44,7 @@ const chatActions = useChatActions()
               <ButtonTelegram />
             </template>
           </Button>
+        </div>
         </div>
       </div>
     </div>
@@ -77,10 +87,22 @@ const chatActions = useChatActions()
 
 .chat-card__input-wrapper {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  max-width: 444px;
   border: 1px solid var(--border-color);
   border-radius: var(--regular-radius);
   background-color: var(--light-color);
+  padding-left: 6px;
+}
+
+.ident {
+  padding-top: 6px;
+}
+
+.chat-card__input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .input {
@@ -88,7 +110,7 @@ const chatActions = useChatActions()
   width: clamp(142px, 24.3vw, 350px);
   background-color: transparent;
   border: none;
-  padding: var(--small-padding) var(--default-padding);
+  padding: var(--small-padding) var(--default-padding) var(--small-padding) 4px;
   outline: none;
 }
 

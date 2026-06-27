@@ -1,8 +1,12 @@
-import { computed, ref } from 'vue'
-import { useChatStore } from '@/entities/chat/useChatStore.ts'
-import { responseApi } from '@/features/chat/api/api.ts'
-import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
-import { messageStatus, roleSender } from '@/entities/chat/types'
+import { ref, watch } from 'vue'
+import { useChatStore } from '@/entities/chat/useChatStore'
+import { responseApi } from '@/features/chat/api/api'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
+import {
+  type Attachments,
+  messageStatus,
+  roleSender
+} from '@/entities/chat/types'
 import type { MessageType } from '@/entities/chat'
 import { useRoute, useRouter } from 'vue-router'
 import {RouteNames} from "@/shared";
@@ -16,17 +20,21 @@ export function useChatActions() {
   const errorMessage = ref<string>('')
   const llmAskText = ref<string>('')
 
-  const chatActiveId = computed(() => {
-    const id = route.params.id
-    return (Array.isArray(id) ? id[0] : id) || null
-  })
+  watch(
+    () => route.params.id,
+    (newId) => {
+    const id = (Array.isArray(newId) ? newId[0] : newId) || null
+    chatStore.setActiveChat(id)
+    },
+    { immediate: true }
+  )
 
-  async function processSendMessage(text: string, userMsg: any, chatId: string) {
+  async function modelResponseRequest(text: string, userMsg: any, chatId: string) {
     globalState.isLlmLoading.value = true
     errorMessage.value = ''
 
     try {
-      const responseReq = await responseApi(text)
+      const responseReq = await responseApi(text, chatStore.files)
 
       if (userMsg) userMsg.status = messageStatus.sent
 
@@ -50,63 +58,56 @@ export function useChatActions() {
     }
   }
 
-  async function createAsk(textToSend: string) {
-    if (!textToSend.trim()) return
+  async function createUserMessage(textToSend: string, file: Attachments[]) {
+    if (!textToSend.trim() && file.length === 0) return
 
-    const currentId = chatActiveId.value as string
+    const currentId = chatStore.chatActiveId as string
 
     let userMessageObj = chatStore.createNewMessage({
+      files: file,
       sender: roleSender.user,
       contentText: textToSend,
       status: messageStatus.pending,
       chatId: currentId,
     })
     chatStore.entryChat(currentId)
-    await processSendMessage(textToSend, userMessageObj, currentId)
+    await modelResponseRequest(textToSend, userMessageObj, currentId)
   }
 
   async function retrySend(failedMessageObj: MessageType) {
     if (globalState.isLlmLoading.value) return
 
-    const chatId = chatActiveId.value as string
+    const chatId = chatStore.chatActiveId as string
     if (!chatId) return
 
     failedMessageObj.status = messageStatus.pending
 
     errorMessage.value = ''
 
-    await processSendMessage(failedMessageObj.content, failedMessageObj, chatId)
+    await modelResponseRequest(failedMessageObj.content, failedMessageObj, chatId)
   }
 
   async function sendMessage() {
-    const currentChatId = chatActiveId.value
+    const currentChatId = chatStore.chatActiveId
     const text = llmAskText.value
+    const file = chatStore.files
     llmAskText.value = ''
+    chatStore.files = []
     if (!currentChatId) {
       const newIdChat = crypto.randomUUID()
       chatStore.createNewChat(newIdChat, text)
       await router.push({ name: RouteNames.chat, params: { id: newIdChat } })
-      await createAsk(text)
+      await createUserMessage(text, file)
     } else {
-      await createAsk(text)
-    }
-  }
-
-  function scrollToBottom() {
-    const messagesContainer = ref<HTMLElement | null>(null)
-
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+      await createUserMessage(text, file)
     }
   }
 
   return {
-    errorMessage,
-    createAsk,
+    createUserMessage,
     retrySend,
-    scrollToBottom,
-    chatActiveId,
     sendMessage,
-    llmAskText
+    llmAskText,
+    errorMessage,
   }
 }
