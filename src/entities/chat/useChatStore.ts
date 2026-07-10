@@ -2,18 +2,21 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { format } from 'date-fns'
 import type {
+  Attachments,
   Chat,
-  MessageType,
+  createMessageParams,
   MessagesMap,
-  createMessageParams, Attachments,
+  MessageType,
 } from '@/entities/chat/index.ts'
-import {finalBase64Url} from "@/pages/login/model/generationService.ts";
+import { currentTypeFile } from '@/shared/lib/file/currentFileType'
+import { TypeFormatFiles } from '@/entities/chat/types'
+import { readFiles } from '@/shared/lib/file/readFiles.ts'
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatsList = ref<Chat[]>([])
   const messagesMap = ref<MessagesMap>({})
   const files = ref<Attachments[]>([])
-  const chatActiveId = ref<string | null>('')
+  const chatActiveId = ref<string | null>(null)
 
   const STORAGE_KEY = 'llm_chat_app:v1'
 
@@ -57,19 +60,19 @@ export const useChatStore = defineStore('chatStore', () => {
   )
 
   const activeChat = computed(() => {
-    return chatsList.value.find((Chat) => Chat.id === chatActiveId.value)
+    return chatsList.value.find((chat) => chat.id === chatActiveId.value)
   })
 
-  function createNewChat(id: string, firstMessageText: string) {
+  function createNewChat(chatId: string, firstMessageText: string) {
     const shortTitle = firstMessageText.slice(0, 27) + '...'
 
     messagesMap.value = {
       ...messagesMap.value,
-      [id]: [],
+      [chatId]: [],
     }
 
     chatsList.value.push({
-      id: id,
+      id: chatId,
       title: shortTitle,
       createAt: Date.now(),
       updateAt: Date.now(),
@@ -91,13 +94,16 @@ export const useChatStore = defineStore('chatStore', () => {
     return messagesMap.value[chatActiveId.value] || []
   })
 
+  const lastUserMessage = computed(() => {
+    return currentMessages.value.at(-2)
+  })
+
   function getTime() {
     const date = new Date()
     return String(format(date, 'HH:mm'))
   }
 
   function createNewMessage(params: createMessageParams) {
-
     const linkMessage: MessageType = {
       attachments: files.value,
       id: crypto.randomUUID(),
@@ -121,74 +127,40 @@ export const useChatStore = defineStore('chatStore', () => {
     return linkMessage
   }
 
-  function currentTypeFile (file: File) {
-    if (file.type.startsWith('audio/')) return  'audio';
-    if (file.type.startsWith('video/')) return  'video';
-    if (file.type.includes('pdf')) return 'file';
-    if (file.type.startsWith('image/')) return  'image';
-    return null;
-  }
-
-  function readFiles (file: File): Promise<string> {
-
-    return new Promise((resolve, reject) => {
-
-      const reader = new FileReader();
-
-      reader.onload = () => {
-
-        const result = reader.result as string;
-        const interResult = result.split(',')[1]
-        const resultAudio = finalBase64Url(interResult)
-        const resultAnotherFiles = finalBase64Url(result)
-
-        if (currentTypeFile(file) === 'audio') {
-          resolve(resultAudio);
-        } else {
-          resolve(resultAnotherFiles);
-        }
-      };
-
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
-  }
-
   async function handleAddFile(event: Event) {
-    const currentFile = event.target as HTMLInputElement
+    if (event.target instanceof HTMLInputElement) {
+      const currentFile = event.target
 
+      if (currentFile.files) {
+        for (const file of Array.from(currentFile.files)) {
+          const preview = URL.createObjectURL(file)
+          const kindType = currentTypeFile(file)
+          const currentBase = await readFiles(file)
 
-    if (currentFile.files) {
+          if (!kindType) return
 
-      for (const file of Array.from(currentFile.files)) {
+          const newItem: Attachments = {
+            id: crypto.randomUUID(),
+            kind: kindType,
+            mimeType: file.type,
+            fileName: file.name,
+            size: file.size,
+            source: {
+              type: TypeFormatFiles.base,
+              value: currentBase,
+            },
+            previewUrl: preview,
+          }
 
-        const preview = URL.createObjectURL(file);
-        const kindType = currentTypeFile(file)
-        const currentBase = await readFiles(file)
-        if(!kindType) return
-
-
-        const newItem: Attachments = {
-          id: crypto.randomUUID(),
-          kind: kindType,
-          mimeType: file.type,
-          fileName: file.name,
-          size: file.size,
-          source: {
-            type: 'base64',
-            value: currentBase,
-          },
-          previewUrl: preview
+          files.value.push(newItem)
         }
-
-        files.value.push(newItem)
       }
     }
   }
 
   function deletePreviewFile(id: string) {
     const currentIndexFile = files.value.findIndex((e) => e.id === id)
+    if (currentIndexFile === -1) return
     files.value.splice(currentIndexFile, 1)
   }
 
@@ -204,6 +176,7 @@ export const useChatStore = defineStore('chatStore', () => {
     handleAddFile,
     deletePreviewFile,
     setActiveChat,
-    chatActiveId
+    chatActiveId,
+    lastUserMessage,
   }
 })

@@ -1,16 +1,22 @@
 import { defineStore } from 'pinia'
-import { responseApiKey } from "@/pages/login/api/api";
+import { responseApiKey } from '@/pages/login/api/api'
 import { ref } from 'vue'
-import { createSHA256CodeChallenge, generateCodeVerifier } from '@/pages/login/model/generationService'
-import { PKCE_KEY } from "@/pages/login/model/storage-key";
-import avatarUser from "@/shared/assets/images/AvatarUser.png";
-import avatarAssistant from "@/shared/assets/images/AvatarAssistant.png";
-import type {authState} from "@/pages/login/model/types.ts";
+import {
+  createSHA256CodeChallenge,
+  generateCodeVerifier,
+} from '@/pages/login/model/generationService'
+import { PKCE_KEY } from '@/pages/login/model/storage-key'
+import avatarUser from '@/shared/assets/images/AvatarUser.png'
+import avatarAssistant from '@/shared/assets/images/AvatarAssistant.png'
+import type { authState } from '@/pages/login/model/types.ts'
 
 export const useLoginStore = defineStore('loginStore', () => {
   const errorMessage = ref('')
-  const url = import.meta.env.VITE_OPENROUTER_APP_URL
-  const isAuthenticated = ref<boolean>(false)
+  const baseAppUrl = import.meta.env.VITE_OPENROUTER_APP_URL
+  const baseUrlAuth = import.meta.env.VITE_OPENROUTER_BASE_URL_AUTH
+  const dataAuth = localStorage.getItem('authState') || '{}'
+  const objDataAuth = JSON.parse(dataAuth)
+  const isAuthenticated = ref<boolean>(!!objDataAuth.userKey)
 
   async function startAuth() {
     const codeVerifier = generateCodeVerifier()
@@ -20,14 +26,20 @@ export const useLoginStore = defineStore('loginStore', () => {
 
     sessionStorage.setItem(PKCE_KEY, dataTemp)
 
-    location.href = `https://openrouter.ai/auth?callback_url=http://localhost:5173/login&code_challenge=${generatedCodeChallenge}&code_challenge_method=S256`
+    const myUrl = new URL(baseUrlAuth)
+
+    myUrl.searchParams.set('callback_url', baseAppUrl)
+    myUrl.searchParams.set('code_challenge', generatedCodeChallenge)
+    myUrl.searchParams.set('code_challenge_method', 'S256')
+
+    location.href = myUrl.toString()
   }
 
   async function callBackCode() {
     errorMessage.value = ''
     const urlParams = new URLSearchParams(window.location.search)
     const codeParam = urlParams.get('code')
-    if(!codeParam) return
+    if (!codeParam) return
 
     try {
       const response = await responseApiKey(codeParam)
@@ -40,14 +52,14 @@ export const useLoginStore = defineStore('loginStore', () => {
         isAuthenticated: isAuthenticated.value,
         userKey: response.key,
         createdAt: String(date),
-        updatedAt: String(date)
+        updatedAt: String(date),
       }
 
       localStorage.setItem('authState', JSON.stringify(authData))
 
       sessionStorage.removeItem(PKCE_KEY)
 
-      window.history.replaceState(null, '', url)
+      window.history.replaceState(null, '', baseAppUrl)
 
       return response
     } catch (error: any) {
@@ -67,5 +79,5 @@ export const useLoginStore = defineStore('loginStore', () => {
     avatar: avatarAssistant,
   })
 
-  return { startAuth, callBackCode, errorMessage, currentUser, assistant }
+  return { startAuth, callBackCode, errorMessage, currentUser, assistant, objDataAuth }
 })

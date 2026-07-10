@@ -2,14 +2,10 @@ import { ref, watch } from 'vue'
 import { useChatStore } from '@/entities/chat/useChatStore'
 import { responseApi } from '@/features/chat/api/api'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
-import {
-  type Attachments,
-  messageStatus,
-  roleSender
-} from '@/entities/chat/types'
+import { type Attachments, messageStatus, RoleSender } from '@/entities/chat/types'
 import type { MessageType } from '@/entities/chat'
 import { useRoute, useRouter } from 'vue-router'
-import {RouteNames} from "@/shared";
+import { RouteNames } from '@/shared'
 
 export function useChatActions() {
   const chatStore = useChatStore()
@@ -23,23 +19,27 @@ export function useChatActions() {
   watch(
     () => route.params.id,
     (newId) => {
-    const id = (Array.isArray(newId) ? newId[0] : newId) || null
-    chatStore.setActiveChat(id)
+      const id = (Array.isArray(newId) ? newId[0] : newId) || null
+      chatStore.setActiveChat(id)
     },
-    { immediate: true }
+    { immediate: true },
   )
 
-  async function modelResponseRequest(text: string, userMsg: any, chatId: string) {
+  async function modelResponseRequest(
+    textUserMsg: string,
+    objUserMsg: MessageType,
+    chatId: string,
+  ) {
     globalState.isLlmLoading.value = true
     errorMessage.value = ''
 
     try {
-      const responseReq = await responseApi(text, chatStore.files)
+      const responseReq = await responseApi(textUserMsg, chatStore.files)
 
-      if (userMsg) userMsg.status = messageStatus.sent
+      if (objUserMsg) objUserMsg.status = messageStatus.sent
 
       chatStore.createNewMessage({
-        sender: roleSender.assistant,
+        sender: RoleSender.assistant,
         contentText: responseReq,
         status: messageStatus.sent,
         chatId: chatId,
@@ -49,8 +49,8 @@ export function useChatActions() {
       console.error('Критическая ошибка при запросе:', error)
       errorMessage.value = error.message || 'Не удалось связаться с сервером. Попробуйте позже.'
 
-      if (userMsg) {
-        userMsg.status = messageStatus.error
+      if (objUserMsg) {
+        objUserMsg.status = messageStatus.error
         chatStore.entryChat(chatId)
       }
     } finally {
@@ -58,18 +58,19 @@ export function useChatActions() {
     }
   }
 
-  async function createUserMessage(textToSend: string, file: Attachments[]) {
-    if (!textToSend.trim() && file.length === 0) return
+  async function createUserMessage(textToSend: string, files: Attachments[]) {
+    if (!textToSend.trim() && files.length === 0) return
 
     const currentId = chatStore.chatActiveId as string
 
     let userMessageObj = chatStore.createNewMessage({
-      files: file,
-      sender: roleSender.user,
+      files: files,
+      sender: RoleSender.user,
       contentText: textToSend,
       status: messageStatus.pending,
       chatId: currentId,
     })
+
     chatStore.entryChat(currentId)
     await modelResponseRequest(textToSend, userMessageObj, currentId)
   }
@@ -89,18 +90,37 @@ export function useChatActions() {
 
   async function sendMessage() {
     const currentChatId = chatStore.chatActiveId
-    const text = llmAskText.value
-    const file = chatStore.files
+
+    const textToSend = llmAskText.value
+
+    const filesToSend = [...chatStore.files]
     llmAskText.value = ''
+    chatStore.files.forEach((file) => {
+      if (!file.previewUrl) return
+      URL.revokeObjectURL(file.previewUrl)
+    })
     chatStore.files = []
     if (!currentChatId) {
       const newIdChat = crypto.randomUUID()
-      chatStore.createNewChat(newIdChat, text)
+      chatStore.createNewChat(newIdChat, textToSend)
       await router.push({ name: RouteNames.chat, params: { id: newIdChat } })
-      await createUserMessage(text, file)
+      await createUserMessage(textToSend, filesToSend)
     } else {
-      await createUserMessage(text, file)
+      await createUserMessage(textToSend, filesToSend)
     }
+  }
+
+  async function retryLastUserMessage() {
+    const message = chatStore.lastUserMessage
+    if (!message) return
+    if (message.role === RoleSender.user) {
+      llmAskText.value = message.content
+      await sendMessage()
+    }
+  }
+
+  async function copyMessage(text: string) {
+    await navigator.clipboard.writeText(text)
   }
 
   return {
@@ -109,5 +129,7 @@ export function useChatActions() {
     sendMessage,
     llmAskText,
     errorMessage,
+    copyMessage,
+    retryLastUserMessage,
   }
 }

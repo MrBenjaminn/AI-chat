@@ -2,8 +2,8 @@
 import { Button } from '@/shared'
 import iconPlus from '@shared/assets/icons/Plus.svg?component'
 import iconSideBarOut from '@shared/assets/icons/Side-Bar-Out.svg?component'
-import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
-import { ButtonVariant, ButtonSize } from "@/shared/ui/button/model/button.ts";
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
+import { ButtonVariant, ButtonSize } from '@/shared/ui/button/model/button'
 
 const globalState = useGlobalAppState()
 </script>

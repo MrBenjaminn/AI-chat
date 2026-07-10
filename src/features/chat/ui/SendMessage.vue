@@ -2,28 +2,19 @@
 import PaperPlaneSmall from '@/shared/assets/icons/Paper-Plane-Small.svg'
 import { Button } from '@/shared'
 import { useChatActions } from '@/features/chat/model/useChatActions.ts'
-import {
-  ButtonSize,
-  ButtonType,
-} from '@/shared/ui/button/model/button.ts'
+import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
 import { computed } from 'vue'
-import AddFile from "@/shared/ui/add-file/AddFile.vue";
-import PreviewFileList from "@/shared/ui/add-file/PreviewFileList.vue";
-
+import AddFile from '@features/chat/ui/AddFile.vue'
+import PreviewFileList from '@features/chat/ui/PreviewFileList.vue'
 
 const globalState = useGlobalAppState()
 
 const chatActions = useChatActions()
 
 const isSubmitDisabled = computed(() => {
-  return Boolean(
-    globalState.isLlmLoading.value ||
-    !chatActions.llmAskText.value.trim()
-  )
+  return Boolean(globalState.isLlmLoading.value || !chatActions.llmAskText.value.trim())
 })
-
-
 </script>
 
 <template>
@@ -49,24 +40,23 @@ const isSubmitDisabled = computed(() => {
     ></textarea>
     <hr />
     <div class="add-send-wrapper">
-    <AddFile/>
-    <Button
-      class="ai-chat__send-message"
-      :disabled="isSubmitDisabled"
-      :type="ButtonType.Submit"
-      :size="ButtonSize.Small"
-    >
-      <template #icon-left>
-        <PaperPlaneSmall />
-      </template>
-      Send message
-    </Button>
+      <AddFile />
+      <Button
+        class="ai-chat__send-message"
+        :disabled="isSubmitDisabled"
+        :type="ButtonType.Submit"
+        :size="ButtonSize.Small"
+      >
+        <template #icon-left>
+          <PaperPlaneSmall />
+        </template>
+        Send message
+      </Button>
     </div>
   </form>
 </template>
 
 <style lang="css" scoped>
-
 .add-send-wrapper {
   display: flex;
   align-items: center;

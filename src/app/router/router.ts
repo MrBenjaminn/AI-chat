@@ -1,17 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { RouteNames } from '@/shared/config/routes.ts'
+import { useLoginStore } from '@/shared/stores/useLoginStore'
 
 const routes = [
   {
     path: '/home',
     name: RouteNames.homePage,
     component: () => import('@/pages/main/ui/MainAreaPages.vue'),
+    meta: { requiresAuth: true },
     alias: '/',
   },
   {
     path: '/chat/:id',
     name: RouteNames.chat,
     component: () => import('@/pages/main/ui/MainAreaPages.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/login',
@@ -25,4 +28,16 @@ const router = createRouter({
   routes,
 })
 
+router.beforeEach((to, _from, next) => {
+  const auth = to.matched.some((record) => record.meta.requiresAuth)
+  const loginStore = useLoginStore()
+
+  if (auth && !loginStore.objDataAuth.userKey) {
+    next('/login')
+  } else if (to.name === RouteNames.loginPage && loginStore.objDataAuth.userKey) {
+    next('/')
+  } else {
+    next()
+  }
+})
 export default router

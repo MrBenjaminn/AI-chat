@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import {ButtonVariant} from "@/shared/ui/button/model/button";
-import {Button} from "@/shared";
-import { useChatStore } from "@/entities/chat/useChatStore.ts";
+import { ButtonVariant } from '@/shared/ui/button/model/button'
+import { Button } from '@/shared'
+import { useChatStore } from '@/entities/chat/useChatStore'
 import DeleteFile from '@shared/assets/icons/DeleteFile.svg?component'
-import AudioIcon from '@shared/assets/icons/Audio-icon.svg?component'
-import VideoIcon from '@shared/assets/icons/Video-icon.svg?component'
-import PdfIcon from '@shared/assets/icons/Pdf-icon.svg?component'
-import type {Attachments} from "@/entities/chat";
+import { checkType } from '@/shared/lib/file/currentFileType'
 
-const chatStore = useChatStore();
-
-function checkType(file: Attachments) {
-  if (file.kind === 'audio') return AudioIcon
-  if (file.kind === 'video') return VideoIcon
-  if (file.kind === 'file') return PdfIcon
-  return null
-}
-
+const chatStore = useChatStore()
 </script>
 
 <template>
@@ -31,7 +20,8 @@ function checkType(file: Attachments) {
           v-if="item.mimeType.startsWith('image/')"
           :src="item.previewUrl"
           alt=""
-          class="preview-image">
+          class="preview-image"
+        />
         <div
           class="background-preview"
           v-else
@@ -48,14 +38,10 @@ function checkType(file: Attachments) {
           label="deleteFile"
           @click.prevent="chatStore.deletePreviewFile(item.id)"
         >
-          <DeleteFile/>
+          <DeleteFile />
         </Button>
         <span class="file-name">
-          {{
-            item.fileName.length >= 10
-          ? item.fileName.slice(0, 10) + '...'
-          : item.fileName
-          }}
+          {{ item.fileName.length >= 10 ? item.fileName.slice(0, 10) + '...' : item.fileName }}
         </span>
       </li>
     </ul>
@@ -127,6 +113,6 @@ function checkType(file: Attachments) {
 .file-name {
   font-size: 12px;
   padding-left: 2px;
-  color: var(--neutral-color)
+  color: var(--neutral-color);
 }
 </style>

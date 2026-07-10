@@ -1,21 +1,26 @@
 <script setup lang="ts">
 import { AccountInfo } from '@/entities/account'
 import { useChatStore } from '@/entities/chat/useChatStore'
-import { useLoginStore } from "@/shared/stores/useLoginStore";
+import { useChatActions } from '@/features/chat/model/useChatActions'
+import { useLoginStore } from '@/shared/stores/useLoginStore'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 import { ErrorMessage } from '@/features/chat'
-import {watch, onMounted, nextTick, ref} from 'vue'
+import { Button } from '@/shared'
+import { watch, onMounted, nextTick, ref } from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
-import { roleSender } from '@/entities/chat/types'
+import { RoleSender } from '@/entities/chat/types'
+import { ButtonVariant } from '@/shared/ui/button/model/button'
+import copyText from '@/shared/assets/icons/Copy-Text.svg?component'
+import retryLastUserMessageIcon from '@/shared/assets/icons/Retry-user-message.svg?component'
 
 const chatStore = useChatStore()
+const chatActions = useChatActions()
 const loginStore = useLoginStore()
 const globalState = useGlobalAppState()
 
 const messagesContainer = ref<HTMLElement | null>(null)
 
 function scrollToBottom() {
-
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
   }
@@ -35,12 +40,12 @@ onMounted(async () => {
 })
 
 interface Props {
-  type?: roleSender.user | roleSender.assistant
+  type?: RoleSender.user | RoleSender.assistant
   depth?: 0 | 1 | 2
 }
 
 withDefaults(defineProps<Props>(), {
-  type: roleSender.assistant,
+  type: RoleSender.assistant,
   depth: 0,
 })
 </script>
@@ -52,15 +57,17 @@ withDefaults(defineProps<Props>(), {
   >
     <div
       class="ai-chat__message"
-      :class="{ 'assistant': item.role === 'assistant' }"
-      v-for="item in chatStore.currentMessages"
+      :class="{ assistant: item.role === 'assistant' }"
+      v-for="(item, index) in chatStore.currentMessages"
       :key="item.id"
     >
       <div class="ai-chat__sender-info">
         <AccountInfo
           size="default"
           :userName="item.role === 'user' ? loginStore.currentUser.name : loginStore.assistant.name"
-          :userAvatar="item.role === 'user' ? loginStore.currentUser.avatar : loginStore.assistant.avatar"
+          :userAvatar="
+            item.role === 'user' ? loginStore.currentUser.avatar : loginStore.assistant.avatar
+          "
         />
         <span class="ai-chat__sender-date"> {{ item.time }} PM </span>
       </div>
@@ -72,6 +79,32 @@ withDefaults(defineProps<Props>(), {
         :appStatus="item.status"
         :currentMessage="item"
       />
+      <div class="ai-chat__buttons">
+        <Button
+          v-if="
+            index === chatStore.currentMessages.length - 1 && item.role === RoleSender.assistant
+          "
+          :variant="ButtonVariant.Secondary"
+          :size="null"
+          label="retry-last-message"
+          class="ai-chat__active-button"
+          title="Повторно отправить последнее сообщение"
+          @click.prevent="chatActions.retryLastUserMessage"
+        >
+          <retryLastUserMessageIcon />
+        </Button>
+        <Button
+          v-if="item.role === RoleSender.assistant"
+          :variant="ButtonVariant.Secondary"
+          :size="null"
+          label="copy-text"
+          class="ai-chat__active-button"
+          title="Копировать сообщение"
+          @click.prevent="chatActions.copyMessage(item.content)"
+        >
+          <copyText />
+        </Button>
+      </div>
     </div>
 
     <transition name="fade">
@@ -148,6 +181,15 @@ withDefaults(defineProps<Props>(), {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.ai-chat__buttons {
+  margin-left: auto;
+  display: flex;
+}
+
+.ai-chat__active-button {
+  color: var(--neutral-color);
 }
 
 @media (max-width: 600px) {

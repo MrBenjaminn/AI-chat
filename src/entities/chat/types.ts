@@ -4,14 +4,14 @@ export enum messageStatus {
   error = 'error',
 }
 
-export enum roleSender {
+export enum RoleSender {
   user = 'user',
   assistant = 'assistant',
 }
 
 export interface createMessageParams {
-  files?: Attachments[];
-  sender: roleSender
+  files?: Attachments[]
+  sender: RoleSender
   contentText: string
   status: messageStatus
   chatId: string
@@ -27,29 +27,41 @@ export interface Chat {
 export interface MessagesMap {
   [chatId: string]: MessageType[]
 }
+export enum TypeFiles {
+  audio = 'audio',
+  video = 'video',
+  file = 'file',
+  image = 'image',
+}
+
+export enum TypeFormatFiles {
+  dataUrl = 'dataUrl',
+  base = 'base64',
+  url = 'url',
+}
 
 export interface Attachments {
-  id: string;
-  kind: 'audio' | 'video' | 'file' | 'image'
-  mimeType: string;
-  fileName: string;
-  size: number;
+  id: string
+  kind: TypeFiles
+  mimeType: string
+  fileName: string
+  size: number
   source: {
-    type: 'dataUrl' | 'base64' | 'url';
-    value: string;
-  };
-  meta?: {
-    durations?: number;
-    format?: string;
+    type: TypeFormatFiles
+    value: string
   }
-  previewUrl?: string;
+  meta?: {
+    durations?: number
+    format?: string
+  }
+  previewUrl?: string
 }
 
 export interface MessageType {
   attachments?: Attachments[]
   id: string
   chatId: string
-  role: roleSender
+  role: RoleSender
   content: string
   createdAt: number
   status?: messageStatus

@@ -2,15 +2,12 @@
 import ButtonTelegram from '@shared/assets/icons/Paper-Plane.svg?component'
 import { Button } from '@/shared'
 import { useChatActions } from '@/features/chat/model/useChatActions'
-import { useChatStore } from "@/entities/chat/useChatStore";
-import AddFile from "@/shared/ui/add-file/AddFile.vue";
-import PreviewFileList from "@/shared/ui/add-file/PreviewFileList.vue";
-
+import { useChatStore } from '@/entities/chat/useChatStore'
+import AddFile from '@features/chat/ui/AddFile.vue'
+import PreviewFileList from '@features/chat/ui/PreviewFileList.vue'
 
 const chatActions = useChatActions()
 const chatStore = useChatStore()
-
-
 </script>
 
 <template>
@@ -19,32 +16,32 @@ const chatStore = useChatStore()
       <h2 class="chat-card__title">Welcome back, Mauro</h2>
       <p class="chat-card__text">Lorem ipsum dolor sit amet consectetur adipiscing elit sed</p>
       <div class="chat-card__input-wrapper">
-        <PreviewFileList :class="{'ident': chatStore.files.length}"/>
+        <PreviewFileList :class="{ ident: chatStore.files.length }" />
         <div class="chat-card__input-group">
-        <AddFile />
-        <label
-          for="chat-input"
-          class="visually-hidden"
-          >How can i help you?</label
-        >
-        <input
-          type="text"
-          class="input"
-          id="chat-input"
-          placeholder="How can i help you?"
-          v-model="chatActions.llmAskText.value"
-          @keydown.enter.prevent="chatActions.sendMessage"
-        />
-        <div class="chat-card__button-wrapper">
-          <Button
-            @click.prevent="chatActions.sendMessage"
-            onlyIcon
+          <AddFile />
+          <label
+            for="chat-input"
+            class="visually-hidden"
+            >How can i help you?</label
           >
-            <template #icon-left>
-              <ButtonTelegram />
-            </template>
-          </Button>
-        </div>
+          <input
+            type="text"
+            class="input"
+            id="chat-input"
+            placeholder="How can i help you?"
+            v-model="chatActions.llmAskText.value"
+            @keydown.enter.prevent="chatActions.sendMessage"
+          />
+          <div class="chat-card__button-wrapper">
+            <Button
+              @click.prevent="chatActions.sendMessage"
+              onlyIcon
+            >
+              <template #icon-left>
+                <ButtonTelegram />
+              </template>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

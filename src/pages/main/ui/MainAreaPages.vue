@@ -2,7 +2,7 @@
 import { EmptyChat, HeaderMainArea } from '@/features/chat'
 import { CloseSidebarOverlay, SideBar } from '@/widgets/sidebar'
 import { ChatPages } from '@/widgets/chatpage'
-import { useChatStore } from "@/entities/chat/useChatStore.ts";
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
 
 const chatStore = useChatStore()
 </script>

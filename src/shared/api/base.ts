@@ -1,6 +1,6 @@
 import axios from 'axios'
+import { useLoginStore } from '@/shared/stores/useLoginStore'
 const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL
-const api = import.meta.env.VITE_OPENROUTER_API_KEY
 const openRouterTitle = import.meta.env.VITE_OPENROUTER_APP_TITLE
 const referer = import.meta.env.VITE_OPENROUTER_APP_URL
 
@@ -8,12 +8,27 @@ export const apiInstanceChat = axios.create({
   baseURL: baseUrl,
   timeout: 30000,
   headers: {
-    Authorization: `Bearer ${api}`,
     'HTTP-Referer': `${referer}`,
     'X-OpenRouter-Title': `${openRouterTitle}`,
     'Content-Type': 'application/json',
   },
 })
+
+apiInstanceChat.interceptors.request.use(
+  (config) => {
+    const loginStore = useLoginStore()
+    const userKey = loginStore.objDataAuth?.userKey
+
+    if (userKey) {
+      config.headers.Authorization = `Bearer ${userKey}`
+    }
+
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
 
 export const apiInstanceAuth = axios.create({
   baseURL: baseUrl,

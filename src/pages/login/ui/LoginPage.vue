@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/shared'
-import { useLoginStore } from "@/shared/stores/useLoginStore";
+import { useLoginStore } from '@/shared/stores/useLoginStore'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { RouteNames } from '@/shared'
-import { ErrorResponse } from "@/pages/login";
+import { ErrorResponse } from '@/pages/login'
 
 const loginStore = useLoginStore()
 const urlParams = new URLSearchParams(window.location.search)

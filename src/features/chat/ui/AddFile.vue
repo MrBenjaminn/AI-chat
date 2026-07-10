@@ -1,34 +1,37 @@
 <script setup lang="ts">
 import AddFileIcon from '@shared/assets/icons/AddFileIcon.svg?component'
-import { useChatActions } from "@/features/chat/model/useChatActions";
-import {ref} from "vue";
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
+import { ref } from 'vue'
 
-const chatActions = useChatActions();
-const fileInputRef = ref<HTMLInputElement | null>(null);
+const chatStore = useChatStore()
+const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const onFileChange = (event: Event) => {
-  chatActions.handleAddFile(event);
+  chatStore.handleAddFile(event)
 
   if (fileInputRef.value) {
-    fileInputRef.value.value = '';
+    fileInputRef.value.value = ''
   }
 }
 </script>
 
 <template>
-  <label for="user-file" class="label-add-file"><AddFileIcon/></label>
+  <label
+    for="user-file"
+    class="label-add-file"
+    ><AddFileIcon
+  /></label>
   <input
     type="file"
     id="user-file"
     name="document"
-    accept=".pdf,.doc,.docx,image/*, .mp3, .wav, .m4a, .mp4, .webm"
+    accept=".pdf,image/*, .mp3, .wav, .m4a, .mp4, .webm"
     class="visually-hidden"
     @change.prevent="onFileChange"
     multiple
     ref="fileInputRef"
-  >
+  />
 </template>
-
 
 <style lang="css" scoped>
 .label-add-file {
@@ -43,7 +46,7 @@ const onFileChange = (event: Event) => {
   width: 28px;
 }
 
-.label-add-file:hover{
+.label-add-file:hover {
   padding: 6px;
   background-color: var(--background-hover);
   border-radius: 50%;
@@ -54,5 +57,4 @@ const onFileChange = (event: Event) => {
 #user-file {
   width: 50px;
 }
-
 </style>
