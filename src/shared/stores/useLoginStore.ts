@@ -6,17 +6,22 @@ import {
   generateCodeVerifier,
 } from '@/pages/login/model/generationService'
 import { PKCE_KEY } from '@/pages/login/model/storage-key'
+import { authService } from '@/shared/lib/auth/token-service'
+import { RouterPaths } from '@/shared/config/routes'
+import type { authState } from '@/pages/login/model/types'
 import avatarUser from '@/shared/assets/images/AvatarUser.png'
 import avatarAssistant from '@/shared/assets/images/AvatarAssistant.png'
-import type { authState } from '@/pages/login/model/types.ts'
 
 export const useLoginStore = defineStore('loginStore', () => {
   const errorMessage = ref('')
   const baseAppUrl = import.meta.env.VITE_OPENROUTER_APP_URL
   const baseUrlAuth = import.meta.env.VITE_OPENROUTER_BASE_URL_AUTH
-  const dataAuth = localStorage.getItem('authState') || '{}'
-  const objDataAuth = JSON.parse(dataAuth)
-  const isAuthenticated = ref<boolean>(!!objDataAuth.userKey)
+  const objDataAuth = ref<Partial<authState>>({})
+  const isAuthenticated = ref<boolean>(!!objDataAuth.value.userKey)
+
+  function syncAuthData() {
+    objDataAuth.value = authService.getAuthData()
+  }
 
   async function startAuth() {
     const codeVerifier = generateCodeVerifier()
@@ -28,7 +33,7 @@ export const useLoginStore = defineStore('loginStore', () => {
 
     const myUrl = new URL(baseUrlAuth)
 
-    myUrl.searchParams.set('callback_url', baseAppUrl)
+    myUrl.searchParams.set('callback_url', `${baseAppUrl}${RouterPaths.login}`)
     myUrl.searchParams.set('code_challenge', generatedCodeChallenge)
     myUrl.searchParams.set('code_challenge_method', 'S256')
 
@@ -39,6 +44,7 @@ export const useLoginStore = defineStore('loginStore', () => {
     errorMessage.value = ''
     const urlParams = new URLSearchParams(window.location.search)
     const codeParam = urlParams.get('code')
+
     if (!codeParam) return
 
     try {
@@ -55,11 +61,13 @@ export const useLoginStore = defineStore('loginStore', () => {
         updatedAt: String(date),
       }
 
-      localStorage.setItem('authState', JSON.stringify(authData))
+      authService.setAuthData(authData)
 
       sessionStorage.removeItem(PKCE_KEY)
 
       window.history.replaceState(null, '', baseAppUrl)
+
+      syncAuthData()
 
       return response
     } catch (error: any) {
@@ -79,5 +87,13 @@ export const useLoginStore = defineStore('loginStore', () => {
     avatar: avatarAssistant,
   })
 
-  return { startAuth, callBackCode, errorMessage, currentUser, assistant, objDataAuth }
+  return {
+    startAuth,
+    callBackCode,
+    errorMessage,
+    currentUser,
+    assistant,
+    objDataAuth,
+    syncAuthData,
+  }
 })

@@ -30,7 +30,7 @@ const buttonClasses = computed(() => {
     :type="href ? undefined : type"
     :is="href ? 'a' : 'button'"
     :href="href"
-    :disable="disabled"
+    :disabled="disabled"
     :aria-label="label"
   >
     <slot name="icon-left" />

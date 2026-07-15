@@ -20,7 +20,7 @@ const globalState = useGlobalAppState()
   >
     <span class="error-delivery-text">Произошла ошибка</span>
     <button
-      @click="chatActions.retrySend(currentMessage)"
+      @click="currentMessage ? chatActions.retrySend(currentMessage) : null"
       class="retry-action-btn"
       :disabled="globalState.isLlmLoading.value"
     >

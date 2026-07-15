@@ -27,12 +27,15 @@ export interface Chat {
 export interface MessagesMap {
   [chatId: string]: MessageType[]
 }
+
 export enum TypeFiles {
   audio = 'audio',
   video = 'video',
   file = 'file',
   image = 'image',
 }
+
+export type ListTypeFiles = 'audio' | 'video' | 'file'
 
 export enum TypeFormatFiles {
   dataUrl = 'dataUrl',

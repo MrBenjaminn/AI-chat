@@ -6,12 +6,12 @@ import { useLoginStore } from '@/shared/stores/useLoginStore'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 import { ErrorMessage } from '@/features/chat'
 import { Button } from '@/shared'
-import { watch, onMounted, nextTick, ref } from 'vue'
+import { watch, onMounted, nextTick, ref, computed } from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
 import { RoleSender } from '@/entities/chat/types'
 import { ButtonVariant } from '@/shared/ui/button/model/button'
-import copyText from '@/shared/assets/icons/Copy-Text.svg?component'
-import retryLastUserMessageIcon from '@/shared/assets/icons/Retry-user-message.svg?component'
+import CopyText from '@/shared/assets/icons/Copy-Text.svg?component'
+import RetryLastUserMessageIcon from '@/shared/assets/icons/Retry-user-message.svg?component'
 
 const chatStore = useChatStore()
 const chatActions = useChatActions()
@@ -19,6 +19,14 @@ const loginStore = useLoginStore()
 const globalState = useGlobalAppState()
 
 const messagesContainer = ref<HTMLElement | null>(null)
+
+const lastAssistantMessageId = computed(() => {
+  const messages = chatStore.currentMessages
+  if (messages.length === 0) return null
+
+  const lastMessage = messages[messages.length - 1]
+  return lastMessage.role === RoleSender.assistant ? lastMessage.id : null
+})
 
 function scrollToBottom() {
   if (messagesContainer.value) {
@@ -58,7 +66,7 @@ withDefaults(defineProps<Props>(), {
     <div
       class="ai-chat__message"
       :class="{ assistant: item.role === 'assistant' }"
-      v-for="(item, index) in chatStore.currentMessages"
+      v-for="(item) in chatStore.currentMessages"
       :key="item.id"
     >
       <div class="ai-chat__sender-info">
@@ -81,9 +89,7 @@ withDefaults(defineProps<Props>(), {
       />
       <div class="ai-chat__buttons">
         <Button
-          v-if="
-            index === chatStore.currentMessages.length - 1 && item.role === RoleSender.assistant
-          "
+          v-if="item.id === lastAssistantMessageId"
           :variant="ButtonVariant.Secondary"
           :size="null"
           label="retry-last-message"
@@ -91,7 +97,7 @@ withDefaults(defineProps<Props>(), {
           title="Повторно отправить последнее сообщение"
           @click.prevent="chatActions.retryLastUserMessage"
         >
-          <retryLastUserMessageIcon />
+          <RetryLastUserMessageIcon />
         </Button>
         <Button
           v-if="item.role === RoleSender.assistant"
@@ -102,7 +108,7 @@ withDefaults(defineProps<Props>(), {
           title="Копировать сообщение"
           @click.prevent="chatActions.copyMessage(item.content)"
         >
-          <copyText />
+          <CopyText />
         </Button>
       </div>
     </div>

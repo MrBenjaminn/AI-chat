@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { useLoginStore } from '@/shared/stores/useLoginStore'
+import { authService } from '@/shared/lib/auth/token-service'
+
 const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL
 const openRouterTitle = import.meta.env.VITE_OPENROUTER_APP_TITLE
 const referer = import.meta.env.VITE_OPENROUTER_APP_URL
@@ -16,8 +17,7 @@ export const apiInstanceChat = axios.create({
 
 apiInstanceChat.interceptors.request.use(
   (config) => {
-    const loginStore = useLoginStore()
-    const userKey = loginStore.objDataAuth?.userKey
+    const userKey = authService.getAuthData()?.userKey
 
     if (userKey) {
       config.headers.Authorization = `Bearer ${userKey}`

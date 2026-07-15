@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useChatStore } from '@/entities/chat/useChatStore'
 import { responseApi } from '@/features/chat/api/api'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
@@ -15,6 +15,10 @@ export function useChatActions() {
 
   const errorMessage = ref<string>('')
   const llmAskText = ref<string>('')
+
+  const isSubmitDisabled = computed(() => {
+    return Boolean(globalState.isLlmLoading.value || !llmAskText.value.trim())
+  })
 
   watch(
     () => route.params.id,
@@ -34,7 +38,7 @@ export function useChatActions() {
     errorMessage.value = ''
 
     try {
-      const responseReq = await responseApi(textUserMsg, chatStore.files)
+      const responseReq = await responseApi(textUserMsg, objUserMsg.attachments)
 
       if (objUserMsg) objUserMsg.status = messageStatus.sent
 
@@ -131,5 +135,6 @@ export function useChatActions() {
     errorMessage,
     copyMessage,
     retryLastUserMessage,
+    isSubmitDisabled,
   }
 }

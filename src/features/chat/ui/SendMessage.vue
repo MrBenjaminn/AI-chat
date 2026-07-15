@@ -3,18 +3,10 @@ import PaperPlaneSmall from '@/shared/assets/icons/Paper-Plane-Small.svg'
 import { Button } from '@/shared'
 import { useChatActions } from '@/features/chat/model/useChatActions.ts'
 import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
-import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
-import { computed } from 'vue'
-import AddFile from '@features/chat/ui/AddFile.vue'
-import PreviewFileList from '@features/chat/ui/PreviewFileList.vue'
-
-const globalState = useGlobalAppState()
+import AddFile from '@/features/chat/ui/AddFile.vue'
+import PreviewFileList from '@/features/chat/ui/PreviewFileList.vue'
 
 const chatActions = useChatActions()
-
-const isSubmitDisabled = computed(() => {
-  return Boolean(globalState.isLlmLoading.value || !chatActions.llmAskText.value.trim())
-})
 </script>
 
 <template>
@@ -43,7 +35,7 @@ const isSubmitDisabled = computed(() => {
       <AddFile />
       <Button
         class="ai-chat__send-message"
-        :disabled="isSubmitDisabled"
+        :disabled="chatActions.isSubmitDisabled.value"
         :type="ButtonType.Submit"
         :size="ButtonSize.Small"
       >

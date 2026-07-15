@@ -105,7 +105,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
   function createNewMessage(params: createMessageParams) {
     const linkMessage: MessageType = {
-      attachments: files.value,
+      attachments: params.files,
       id: crypto.randomUUID(),
       chatId: params.chatId,
       role: params.sender,

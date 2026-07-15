@@ -3,8 +3,8 @@ import ButtonTelegram from '@shared/assets/icons/Paper-Plane.svg?component'
 import { Button } from '@/shared'
 import { useChatActions } from '@/features/chat/model/useChatActions'
 import { useChatStore } from '@/entities/chat/useChatStore'
-import AddFile from '@features/chat/ui/AddFile.vue'
-import PreviewFileList from '@features/chat/ui/PreviewFileList.vue'
+import AddFile from '@/features/chat/ui/AddFile.vue'
+import PreviewFileList from '@/features/chat/ui/PreviewFileList.vue'
 
 const chatActions = useChatActions()
 const chatStore = useChatStore()
@@ -35,6 +35,7 @@ const chatStore = useChatStore()
           <div class="chat-card__button-wrapper">
             <Button
               @click.prevent="chatActions.sendMessage"
+              :disabled="chatActions.isSubmitDisabled.value"
               onlyIcon
             >
               <template #icon-left>
