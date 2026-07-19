@@ -1,4 +1,4 @@
-import type {Attachments} from "@/shared";
+import type { Attachments } from '@/shared'
 
 export enum PreviewFilesVariant {
   Primary = 'primary',
@@ -11,7 +11,7 @@ export enum PreviewFilesSize {
 }
 
 export interface PreviewFilesProps {
-  variant?: PreviewFilesVariant;
-  size?: PreviewFilesSize;
+  variant?: PreviewFilesVariant
+  size?: PreviewFilesSize
   files?: Attachments[]
 }

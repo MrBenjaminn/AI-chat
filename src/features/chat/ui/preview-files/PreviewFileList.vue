@@ -1,30 +1,25 @@
 <script setup lang="ts">
-import {ButtonVariant} from "@/shared/ui/button/model/button";
-import {Button} from "@/shared";
-import {useChatStore} from "@/entities/chat/useChatStore";
+import { ButtonVariant } from '@/shared/ui/button/model/button'
+import { Button } from '@/shared'
+import { useChatStore } from '@/entities/chat/useChatStore'
 import DeleteFile from '@shared/assets/icons/DeleteFile.svg?component'
-import {checkType} from "@/shared/lib/file/currentFileType";
-import {fileService} from "@/shared/lib/file/fileService";
+import { checkType } from '@/shared/lib/file/currentFileType'
+import { fileService } from '@/shared/lib/file/fileService'
 import {
   type PreviewFilesProps,
-  PreviewFilesVariant
-} from "@/features/chat/ui/preview-files/model/preview";
+  PreviewFilesVariant,
+} from '@/features/chat/ui/preview-files/model/preview'
 import { computed } from 'vue'
 
 const chatStore = useChatStore()
 const props = defineProps<PreviewFilesProps>()
 
 const previewFilesVariant = computed(() => {
-  return [
-    `base-preview--${props.variant}`,
-  ]
+  return [`base-preview--${props.variant}`]
 })
 
 const previewFilesSize = computed(() => {
-  return [
-    'base-preview',
-    `base-preview--${props.size}`
-  ]
+  return ['base-preview', `base-preview--${props.size}`]
 })
 
 const textLimit = computed(() => {
@@ -58,12 +53,9 @@ function formattedFileName(file: string) {
             :is="checkType(item)"
             class="file-icon"
           />
-          <span
-            :class="previewFilesVariant"
-
-          >
-          {{ formattedFileName(item.fileName) }}
-        </span>
+          <span :class="previewFilesVariant">
+            {{ formattedFileName(item.fileName) }}
+          </span>
         </div>
         <Button
           class="remove-btn"

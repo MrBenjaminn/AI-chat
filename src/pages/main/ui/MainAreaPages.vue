@@ -27,7 +27,6 @@ watch(
 watch(
   () => route.params.id,
   async (newId) => {
-
     if (route.name === RouteNames.homePage) {
       chatStore.setActiveChat(null)
       return

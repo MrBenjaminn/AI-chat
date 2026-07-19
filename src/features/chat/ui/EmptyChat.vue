@@ -4,11 +4,11 @@ import { Button } from '@/shared'
 import { useChatActions } from '@/features/chat/model/useChatActions'
 import { useChatStore } from '@/entities/chat/useChatStore'
 import AddFile from '@/features/chat/ui/AddFile.vue'
-import { PreviewFileList } from "@/features/chat";
+import { PreviewFileList } from '@/features/chat'
 import {
   PreviewFilesSize,
-  PreviewFilesVariant
-} from "@/features/chat/ui/preview-files/model/preview.ts";
+  PreviewFilesVariant,
+} from '@/features/chat/ui/preview-files/model/preview.ts'
 
 const chatActions = useChatActions()
 const chatStore = useChatStore()

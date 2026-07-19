@@ -1,6 +1,6 @@
 export { default as Button } from './ui/button/Button.vue'
 export { RouteNames } from './config/routes.ts'
-import  {
+import {
   type MessageType,
   type MessagesMap,
   type Chat,

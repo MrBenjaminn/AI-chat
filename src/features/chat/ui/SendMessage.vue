@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import PaperPlaneSmall from '@/shared/assets/icons/Paper-Plane-Small.svg'
-import {Button} from '@/shared'
-import {useChatActions} from '@/features/chat/model/useChatActions'
-import {useChatStore} from "@/entities/chat/useChatStore";
-import {ButtonSize, ButtonType} from '@/shared/ui/button/model/button'
+import { Button } from '@/shared'
+import { useChatActions } from '@/features/chat/model/useChatActions'
+import { useChatStore } from '@/entities/chat/useChatStore'
+import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button'
 import AddFile from '@/features/chat/ui/AddFile.vue'
-import {PreviewFileList} from "@/features/chat";
+import { PreviewFileList } from '@/features/chat'
 import {
   PreviewFilesSize,
-  PreviewFilesVariant
-} from "@/features/chat/ui/preview-files/model/preview";
+  PreviewFilesVariant,
+} from '@/features/chat/ui/preview-files/model/preview'
 
 const chatActions = useChatActions()
 const chatStore = useChatStore()

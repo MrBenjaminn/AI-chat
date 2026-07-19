@@ -1,13 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { format } from 'date-fns'
-import type {
-  Attachments,
-  Chat,
-  CreateMessageParams,
-  MessagesMap,
-  MessageType,
-} from '@/shared'
+import type { Attachments, Chat, CreateMessageParams, MessagesMap, MessageType } from '@/shared'
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatsList = ref<Chat[]>([])
@@ -99,12 +93,12 @@ export const useChatStore = defineStore('chatStore', () => {
     if (!chatActiveId.value) return []
     const currentChatHistory = messagesMap.value[chatActiveId.value]
     const messagesForSend = currentChatHistory.map((el) => {
-        return {
-          role: el.role,
-          content: el.content
-        }
-      })
-      return messagesForSend.slice(currentChatHistory.length - 9)
+      return {
+        role: el.role,
+        content: el.content,
+      }
+    })
+    return messagesForSend.slice(currentChatHistory.length - 9)
   })
 
   function getTime() {
@@ -148,6 +142,6 @@ export const useChatStore = defineStore('chatStore', () => {
     setActiveChat,
     chatActiveId,
     lastUserMessage,
-    contextMessages
+    contextMessages,
   }
 })

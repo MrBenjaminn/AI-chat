@@ -72,6 +72,6 @@ export interface MessageType {
 }
 
 export interface ContextMessages {
-  role: RoleSender,
+  role: RoleSender
   content: string
 }

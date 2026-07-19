@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import {AccountInfo} from '@/entities/account'
-import {useChatStore} from '@/entities/chat/useChatStore'
-import {useChatActions} from '@/features/chat/model/useChatActions'
-import {useLoginStore} from '@/shared/stores/useLoginStore'
-import {useGlobalAppState} from '@/shared/lib/state/useGlobalAppState'
-import {ErrorMessage, PreviewFileList} from '@/features/chat'
-import {Button} from '@/shared'
-import {computed, nextTick, onMounted, ref, watch} from 'vue'
+import { AccountInfo } from '@/entities/account'
+import { useChatStore } from '@/entities/chat/useChatStore'
+import { useChatActions } from '@/features/chat/model/useChatActions'
+import { useLoginStore } from '@/shared/stores/useLoginStore'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
+import { ErrorMessage, PreviewFileList } from '@/features/chat'
+import { Button } from '@/shared'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
-import {RoleSender} from '@/shared/type/chats'
-import {ButtonVariant} from '@/shared/ui/button/model/button'
+import { RoleSender } from '@/shared/type/chats'
+import { ButtonVariant } from '@/shared/ui/button/model/button'
 import CopyText from '@/shared/assets/icons/Copy-Text.svg?component'
-import RetryLastUserMessageIcon
-  from '@/shared/assets/icons/Retry-user-message.svg?component'
+import RetryLastUserMessageIcon from '@/shared/assets/icons/Retry-user-message.svg?component'
 import {
   PreviewFilesSize,
-  PreviewFilesVariant
-} from "@/features/chat/ui/preview-files/model/preview.ts";
+  PreviewFilesVariant,
+} from '@/features/chat/ui/preview-files/model/preview.ts'
 
 const chatStore = useChatStore()
 const chatActions = useChatActions()

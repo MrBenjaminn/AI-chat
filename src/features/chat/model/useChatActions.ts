@@ -2,13 +2,7 @@ import { computed, ref } from 'vue'
 import { useChatStore } from '@/entities/chat/useChatStore'
 import { responseApi } from '@/features/chat/api/api'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
-import {
-  type Attachments,
-  type MessageType,
-  messageStatus,
-  RoleSender
-}
-  from '@/shared/type/chats'
+import { type Attachments, type MessageType, messageStatus, RoleSender } from '@/shared/type/chats'
 import { useRouter } from 'vue-router'
 import { RouteNames } from '@/shared'
 import { clearPreviewUrl } from '@/shared/lib/file/clearPreviewUrl'
@@ -34,7 +28,11 @@ export function useChatActions() {
     errorMessage.value = ''
 
     try {
-      const responseReq = await responseApi(textUserMsg, objUserMsg.attachments, chatStore.contextMessages)
+      const responseReq = await responseApi(
+        textUserMsg,
+        objUserMsg.attachments,
+        chatStore.contextMessages,
+      )
 
       if (objUserMsg) objUserMsg.status = messageStatus.sent
 

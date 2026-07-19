@@ -1,8 +1,8 @@
 import { apiInstanceChat } from '@/shared/api/base'
-import  { type Attachments, type ContextMessages } from '@/shared'
+import { type Attachments, type ContextMessages } from '@/shared'
 import { RoleSender } from '@/shared/type/chats'
 import type { OpenRouterMessageContent } from '@/features/chat/api/type'
-import { toValue } from "vue";
+import { toValue } from 'vue'
 
 function currentTypeFileResponse(file?: Attachments): OpenRouterMessageContent | undefined {
   if (!file) return
@@ -19,7 +19,11 @@ function currentTypeFileResponse(file?: Attachments): OpenRouterMessageContent |
   return filesBodyResponse[file.kind]
 }
 
-export async function responseApi(text: string, files?: Attachments[], messages?: ContextMessages[] ): Promise<string> {
+export async function responseApi(
+  text: string,
+  files?: Attachments[],
+  messages?: ContextMessages[],
+): Promise<string> {
   const model = import.meta.env.VITE_OPENROUTER_MODEL
   const typeText = { type: 'text', text: text }
   console.log(messages)
