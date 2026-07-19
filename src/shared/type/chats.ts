@@ -9,7 +9,7 @@ export enum RoleSender {
   assistant = 'assistant',
 }
 
-export interface createMessageParams {
+export interface CreateMessageParams {
   files?: Attachments[]
   sender: RoleSender
   contentText: string
@@ -49,7 +49,7 @@ export interface Attachments {
   mimeType: string
   fileName: string
   size: number
-  source: {
+  source?: {
     type: TypeFormatFiles
     value: string
   }
@@ -69,4 +69,9 @@ export interface MessageType {
   createdAt: number
   status?: messageStatus
   time: string
+}
+
+export interface ContextMessages {
+  role: RoleSender,
+  content: string
 }

@@ -2,7 +2,7 @@
 import { useChatActions } from '../model/useChatActions'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 import iconRetrySend from '@shared/assets/icons/RetrySend.svg?component'
-import type { MessageType } from '@/entities/chat'
+import type { MessageType } from '@/shared'
 
 defineProps<{
   role?: string

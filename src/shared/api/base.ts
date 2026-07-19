@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { authService } from '@/shared/lib/auth/token-service'
+import { authService } from '../lib/auth/tokenService'
 
 const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL
 const openRouterTitle = import.meta.env.VITE_OPENROUTER_APP_TITLE

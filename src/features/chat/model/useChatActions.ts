@@ -1,16 +1,21 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useChatStore } from '@/entities/chat/useChatStore'
 import { responseApi } from '@/features/chat/api/api'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
-import { type Attachments, messageStatus, RoleSender } from '@/entities/chat/types'
-import type { MessageType } from '@/entities/chat'
-import { useRoute, useRouter } from 'vue-router'
+import {
+  type Attachments,
+  type MessageType,
+  messageStatus,
+  RoleSender
+}
+  from '@/shared/type/chats'
+import { useRouter } from 'vue-router'
 import { RouteNames } from '@/shared'
+import { clearPreviewUrl } from '@/shared/lib/file/clearPreviewUrl'
 
 export function useChatActions() {
   const chatStore = useChatStore()
   const globalState = useGlobalAppState()
-  const route = useRoute()
   const router = useRouter()
 
   const errorMessage = ref<string>('')
@@ -19,15 +24,6 @@ export function useChatActions() {
   const isSubmitDisabled = computed(() => {
     return Boolean(globalState.isLlmLoading.value || !llmAskText.value.trim())
   })
-
-  watch(
-    () => route.params.id,
-    (newId) => {
-      const id = (Array.isArray(newId) ? newId[0] : newId) || null
-      chatStore.setActiveChat(id)
-    },
-    { immediate: true },
-  )
 
   async function modelResponseRequest(
     textUserMsg: string,
@@ -38,7 +34,7 @@ export function useChatActions() {
     errorMessage.value = ''
 
     try {
-      const responseReq = await responseApi(textUserMsg, objUserMsg.attachments)
+      const responseReq = await responseApi(textUserMsg, objUserMsg.attachments, chatStore.contextMessages)
 
       if (objUserMsg) objUserMsg.status = messageStatus.sent
 
@@ -67,8 +63,18 @@ export function useChatActions() {
 
     const currentId = chatStore.chatActiveId as string
 
+    const filesDataForMessage = files.map((file) => {
+      return {
+        id: file.id,
+        kind: file.kind,
+        mimeType: file.mimeType,
+        fileName: file.fileName,
+        size: file.size,
+      }
+    })
+
     let userMessageObj = chatStore.createNewMessage({
-      files: files,
+      files: filesDataForMessage,
       sender: RoleSender.user,
       contentText: textToSend,
       status: messageStatus.pending,
@@ -93,16 +99,16 @@ export function useChatActions() {
   }
 
   async function sendMessage() {
+    if (globalState.isLlmLoading.value) return
     const currentChatId = chatStore.chatActiveId
 
     const textToSend = llmAskText.value
 
     const filesToSend = [...chatStore.files]
     llmAskText.value = ''
-    chatStore.files.forEach((file) => {
-      if (!file.previewUrl) return
-      URL.revokeObjectURL(file.previewUrl)
-    })
+
+    clearPreviewUrl(chatStore.files)
+
     chatStore.files = []
     if (!currentChatId) {
       const newIdChat = crypto.randomUUID()

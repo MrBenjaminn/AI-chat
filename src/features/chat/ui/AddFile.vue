@@ -2,12 +2,13 @@
 import AddFileIcon from '@shared/assets/icons/AddFileIcon.svg?component'
 import { useChatStore } from '@/entities/chat/useChatStore.ts'
 import { ref } from 'vue'
+import { fileService } from '@shared/lib/file/fileService'
 
 const chatStore = useChatStore()
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const onFileChange = (event: Event) => {
-  chatStore.handleAddFile(event)
+  fileService.handleAddFile(event, chatStore.files)
 
   if (fileInputRef.value) {
     fileInputRef.value.value = ''

@@ -13,12 +13,11 @@ const currentCreateChatTime = computed(() => {
     return format(new Date(currentTimeStep), 'dd.MM.yyyy HH:mm')
   }
 })
-
 </script>
 
 <template>
   <div class="ai-chat">
-    <span class="ai-chat__date"> Create {{ currentCreateChatTime }} PM </span>
+    <span class="ai-chat__date"> Create {{ currentCreateChatTime }} </span>
     <Message />
     <SendMessage />
   </div>

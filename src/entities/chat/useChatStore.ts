@@ -4,13 +4,10 @@ import { format } from 'date-fns'
 import type {
   Attachments,
   Chat,
-  createMessageParams,
+  CreateMessageParams,
   MessagesMap,
   MessageType,
-} from '@/entities/chat/index.ts'
-import { currentTypeFile } from '@/shared/lib/file/currentFileType'
-import { TypeFormatFiles } from '@/entities/chat/types'
-import { readFiles } from '@/shared/lib/file/readFiles.ts'
+} from '@/shared'
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatsList = ref<Chat[]>([])
@@ -98,12 +95,24 @@ export const useChatStore = defineStore('chatStore', () => {
     return currentMessages.value.at(-2)
   })
 
+  const contextMessages = computed(() => {
+    if (!chatActiveId.value) return []
+    const currentChatHistory = messagesMap.value[chatActiveId.value]
+    const messagesForSend = currentChatHistory.map((el) => {
+        return {
+          role: el.role,
+          content: el.content
+        }
+      })
+      return messagesForSend.slice(currentChatHistory.length - 9)
+  })
+
   function getTime() {
     const date = new Date()
     return String(format(date, 'HH:mm'))
   }
 
-  function createNewMessage(params: createMessageParams) {
+  function createNewMessage(params: CreateMessageParams) {
     const linkMessage: MessageType = {
       attachments: params.files,
       id: crypto.randomUUID(),
@@ -127,43 +136,6 @@ export const useChatStore = defineStore('chatStore', () => {
     return linkMessage
   }
 
-  async function handleAddFile(event: Event) {
-    if (event.target instanceof HTMLInputElement) {
-      const currentFile = event.target
-
-      if (currentFile.files) {
-        for (const file of Array.from(currentFile.files)) {
-          const preview = URL.createObjectURL(file)
-          const kindType = currentTypeFile(file)
-          const currentBase = await readFiles(file)
-
-          if (!kindType) return
-
-          const newItem: Attachments = {
-            id: crypto.randomUUID(),
-            kind: kindType,
-            mimeType: file.type,
-            fileName: file.name,
-            size: file.size,
-            source: {
-              type: TypeFormatFiles.base,
-              value: currentBase,
-            },
-            previewUrl: preview,
-          }
-
-          files.value.push(newItem)
-        }
-      }
-    }
-  }
-
-  function deletePreviewFile(id: string) {
-    const currentIndexFile = files.value.findIndex((e) => e.id === id)
-    if (currentIndexFile === -1) return
-    files.value.splice(currentIndexFile, 1)
-  }
-
   return {
     messagesMap,
     currentMessages,
@@ -173,10 +145,9 @@ export const useChatStore = defineStore('chatStore', () => {
     createNewChat,
     entryChat,
     files,
-    handleAddFile,
-    deletePreviewFile,
     setActiveChat,
     chatActiveId,
     lastUserMessage,
+    contextMessages
   }
 })

@@ -1,11 +1,13 @@
 import { apiInstanceChat } from '@/shared/api/base'
-import type { Attachments } from '@/entities/chat'
-import { RoleSender } from '@/entities/chat/types'
+import  { type Attachments, type ContextMessages } from '@/shared'
+import { RoleSender } from '@/shared/type/chats'
 import type { OpenRouterMessageContent } from '@/features/chat/api/type'
+import { toValue } from "vue";
 
 function currentTypeFileResponse(file?: Attachments): OpenRouterMessageContent | undefined {
   if (!file) return
-  const baseData = file?.source.value
+  const baseData = file?.source?.value
+  if (!baseData) return
 
   const filesBodyResponse = {
     image: { type: 'image_url', image_url: { url: baseData } },
@@ -17,9 +19,10 @@ function currentTypeFileResponse(file?: Attachments): OpenRouterMessageContent |
   return filesBodyResponse[file.kind]
 }
 
-export async function responseApi(text: string, files?: Attachments[]): Promise<string> {
+export async function responseApi(text: string, files?: Attachments[], messages?: ContextMessages[] ): Promise<string> {
   const model = import.meta.env.VITE_OPENROUTER_MODEL
   const typeText = { type: 'text', text: text }
+  console.log(messages)
 
   let messagesContent: OpenRouterMessageContent[] = [typeText]
 
@@ -30,16 +33,17 @@ export async function responseApi(text: string, files?: Attachments[]): Promise<
 
     messagesContent = [...messagesContent, ...formattedFiles]
   }
-
+  const rawMessages = toValue(messages)
   const responseTextBody = {
     model,
-    messages: [{ role: RoleSender.user, content: text }],
+    messages: [...(rawMessages ?? []), { role: RoleSender.user, content: text }],
     reasoning: { enabled: true },
   }
 
   const responseFilesBody = {
     model,
     messages: [
+      ...(rawMessages ?? []),
       {
         role: RoleSender.user,
         content: messagesContent,
@@ -47,7 +51,7 @@ export async function responseApi(text: string, files?: Attachments[]): Promise<
     ],
   }
 
-  const currentBody = files ? responseFilesBody : responseTextBody
+  const currentBody = (files?.length ?? 0) > 0 ? responseFilesBody : responseTextBody
   const responseJustText = await apiInstanceChat.post('/chat/completions', currentBody)
   const aiResponseText = responseJustText.data?.choices[0]?.message?.content
 

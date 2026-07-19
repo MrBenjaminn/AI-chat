@@ -1,6 +1,6 @@
-import { finalBase64Url } from '@/shared/lib/file/converToBase64.ts'
-import { currentTypeFile } from '@/shared/lib/file/currentFileType.ts'
-import { TypeFiles } from '@/entities/chat/types.ts'
+import { finalBase64Url } from '../../lib/file/converToBase64.ts'
+import { currentTypeFile } from '../../lib/file/currentFileType.ts'
+import { TypeFiles } from '../../type/chats'
 
 export function readFiles(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

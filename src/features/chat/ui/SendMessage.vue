@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import PaperPlaneSmall from '@/shared/assets/icons/Paper-Plane-Small.svg'
-import { Button } from '@/shared'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
-import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
+import {Button} from '@/shared'
+import {useChatActions} from '@/features/chat/model/useChatActions'
+import {useChatStore} from "@/entities/chat/useChatStore";
+import {ButtonSize, ButtonType} from '@/shared/ui/button/model/button'
 import AddFile from '@/features/chat/ui/AddFile.vue'
-import PreviewFileList from '@/features/chat/ui/PreviewFileList.vue'
+import {PreviewFileList} from "@/features/chat";
+import {
+  PreviewFilesSize,
+  PreviewFilesVariant
+} from "@/features/chat/ui/preview-files/model/preview";
 
 const chatActions = useChatActions()
+const chatStore = useChatStore()
 </script>
 
 <template>
@@ -15,7 +21,11 @@ const chatActions = useChatActions()
     enctype="multipart/form-data"
     @submit.prevent="chatActions.sendMessage"
   >
-    <PreviewFileList />
+    <PreviewFileList
+      :files="chatStore.files"
+      :variant="PreviewFilesVariant.Primary"
+      :size="PreviewFilesSize.Small"
+    />
     <label
       for="input-message"
       class="visually-hidden"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ButtonProps } from '@/shared/ui/button/model/button.ts'
-import { ButtonVariant, ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
+import type { ButtonProps } from './model/button'
+import { ButtonVariant, ButtonSize, ButtonType } from './model/button'
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<ButtonProps>(), {

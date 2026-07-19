@@ -16,7 +16,7 @@ const handleAuth = async () => {
     await loginStore.callBackCode()
     await router.push({ name: RouteNames.homePage })
     if (!loginStore.errorMessage) {
-      await router.push({ name: RouteNames.homePage })
+      await router.push({ name: RouteNames.loginPage })
     }
   }
 }

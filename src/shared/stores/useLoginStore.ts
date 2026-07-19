@@ -6,11 +6,11 @@ import {
   generateCodeVerifier,
 } from '@/pages/login/model/generationService'
 import { PKCE_KEY } from '@/pages/login/model/storage-key'
-import { authService } from '@/shared/lib/auth/token-service'
-import { RouterPaths } from '@/shared/config/routes'
+import { authService } from '../lib/auth/tokenService'
+import { RouterPaths } from '../config/routes'
 import type { authState } from '@/pages/login/model/types'
-import avatarUser from '@/shared/assets/images/AvatarUser.png'
-import avatarAssistant from '@/shared/assets/images/AvatarAssistant.png'
+import avatarUser from '../assets/images/AvatarUser.png'
+import avatarAssistant from '../assets/images/AvatarAssistant.png'
 
 export const useLoginStore = defineStore('loginStore', () => {
   const errorMessage = ref('')

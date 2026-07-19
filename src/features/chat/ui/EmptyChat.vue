@@ -4,7 +4,11 @@ import { Button } from '@/shared'
 import { useChatActions } from '@/features/chat/model/useChatActions'
 import { useChatStore } from '@/entities/chat/useChatStore'
 import AddFile from '@/features/chat/ui/AddFile.vue'
-import PreviewFileList from '@/features/chat/ui/PreviewFileList.vue'
+import { PreviewFileList } from "@/features/chat";
+import {
+  PreviewFilesSize,
+  PreviewFilesVariant
+} from "@/features/chat/ui/preview-files/model/preview.ts";
 
 const chatActions = useChatActions()
 const chatStore = useChatStore()
@@ -16,7 +20,12 @@ const chatStore = useChatStore()
       <h2 class="chat-card__title">Welcome back, Mauro</h2>
       <p class="chat-card__text">Lorem ipsum dolor sit amet consectetur adipiscing elit sed</p>
       <div class="chat-card__input-wrapper">
-        <PreviewFileList :class="{ ident: chatStore.files.length }" />
+        <PreviewFileList
+          class="ident"
+          :files="chatStore.files"
+          :variant="PreviewFilesVariant.Primary"
+          :size="PreviewFilesSize.Small"
+        />
         <div class="chat-card__input-group">
           <AddFile />
           <label

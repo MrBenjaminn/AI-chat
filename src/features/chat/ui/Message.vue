@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import { AccountInfo } from '@/entities/account'
-import { useChatStore } from '@/entities/chat/useChatStore'
-import { useChatActions } from '@/features/chat/model/useChatActions'
-import { useLoginStore } from '@/shared/stores/useLoginStore'
-import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
-import { ErrorMessage } from '@/features/chat'
-import { Button } from '@/shared'
-import { watch, onMounted, nextTick, ref, computed } from 'vue'
+import {AccountInfo} from '@/entities/account'
+import {useChatStore} from '@/entities/chat/useChatStore'
+import {useChatActions} from '@/features/chat/model/useChatActions'
+import {useLoginStore} from '@/shared/stores/useLoginStore'
+import {useGlobalAppState} from '@/shared/lib/state/useGlobalAppState'
+import {ErrorMessage, PreviewFileList} from '@/features/chat'
+import {Button} from '@/shared'
+import {computed, nextTick, onMounted, ref, watch} from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
-import { RoleSender } from '@/entities/chat/types'
-import { ButtonVariant } from '@/shared/ui/button/model/button'
+import {RoleSender} from '@/shared/type/chats'
+import {ButtonVariant} from '@/shared/ui/button/model/button'
 import CopyText from '@/shared/assets/icons/Copy-Text.svg?component'
-import RetryLastUserMessageIcon from '@/shared/assets/icons/Retry-user-message.svg?component'
+import RetryLastUserMessageIcon
+  from '@/shared/assets/icons/Retry-user-message.svg?component'
+import {
+  PreviewFilesSize,
+  PreviewFilesVariant
+} from "@/features/chat/ui/preview-files/model/preview.ts";
 
 const chatStore = useChatStore()
 const chatActions = useChatActions()
@@ -66,9 +71,16 @@ withDefaults(defineProps<Props>(), {
     <div
       class="ai-chat__message"
       :class="{ assistant: item.role === 'assistant' }"
-      v-for="(item) in chatStore.currentMessages"
+      v-for="item in chatStore.currentMessages"
       :key="item.id"
     >
+      <PreviewFileList
+        v-if="item.attachments"
+        :files="item.attachments"
+        :variant="PreviewFilesVariant.Secondary"
+        :size="PreviewFilesSize.Default"
+      />
+
       <div class="ai-chat__sender-info">
         <AccountInfo
           size="default"
@@ -77,7 +89,7 @@ withDefaults(defineProps<Props>(), {
             item.role === 'user' ? loginStore.currentUser.avatar : loginStore.assistant.avatar
           "
         />
-        <span class="ai-chat__sender-date"> {{ item.time }} PM </span>
+        <span class="ai-chat__sender-date"> {{ item.time }} </span>
       </div>
       <p class="ai-chat__text-message">
         {{ item.content }}
@@ -134,6 +146,10 @@ withDefaults(defineProps<Props>(), {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #cccccc transparent;
+}
+
+.view-send-files {
+  width: max-content;
 }
 
 .assistant {
