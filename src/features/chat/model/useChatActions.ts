@@ -59,7 +59,8 @@ export function useChatActions() {
   async function createUserMessage(textToSend: string, files: Attachments[]) {
     if (!textToSend.trim() && files.length === 0) return
 
-    const currentId = chatStore.chatActiveId as string
+    const currentId = chatStore.chatActiveId
+    if (!currentId) return
 
     const filesDataForMessage = files.map((file) => {
       return {
@@ -71,7 +72,7 @@ export function useChatActions() {
       }
     })
 
-    let userMessageObj = chatStore.createNewMessage({
+    const userMessageObj = chatStore.createNewMessage({
       files: filesDataForMessage,
       sender: RoleSender.user,
       contentText: textToSend,
@@ -86,7 +87,7 @@ export function useChatActions() {
   async function retrySend(failedMessageObj: MessageType) {
     if (globalState.isLlmLoading.value) return
 
-    const chatId = chatStore.chatActiveId as string
+    const chatId = chatStore.chatActiveId
     if (!chatId) return
 
     failedMessageObj.status = messageStatus.pending

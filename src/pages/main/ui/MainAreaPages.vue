@@ -3,17 +3,19 @@ import { EmptyChat, HeaderMainArea } from '@/features/chat'
 import { CloseSidebarOverlay, SideBar } from '@/widgets/sidebar'
 import { ChatPages } from '@/widgets/chatpage'
 import { useChatStore } from '@/entities/chat/useChatStore.ts'
-import { onUnmounted, watch } from 'vue'
+import { onUnmounted, watch, computed } from 'vue'
 import { clearPreviewUrl } from '@/shared/lib/file/clearPreviewUrl'
-import { useRoute, useRouter } from 'vue-router'
-import { RouteNames } from '@/shared'
+import { useRoute } from 'vue-router'
 
 const chatStore = useChatStore()
 const route = useRoute()
-const router = useRouter()
 
 onUnmounted(() => {
   clearPreviewUrl(chatStore.files)
+})
+
+const activeComponent = computed(() => {
+  return route.params.id ? ChatPages : EmptyChat
 })
 
 watch(
@@ -23,27 +25,6 @@ watch(
     chatStore.files = []
   },
 )
-
-watch(
-  () => route.params.id,
-  async (newId) => {
-    if (route.name === RouteNames.homePage) {
-      chatStore.setActiveChat(null)
-      return
-    }
-
-    const chat = chatStore.chatsList.find((chat) => chat.id === newId)
-
-    if (!chat) {
-      await router.push({ name: RouteNames.homePage })
-      return
-    }
-
-    const id = (Array.isArray(newId) ? newId[0] : newId) || null
-    chatStore.setActiveChat(id)
-  },
-  { immediate: true },
-)
 </script>
 
 <template>
@@ -51,7 +32,10 @@ watch(
   <main class="main-area-wrapper">
     <CloseSidebarOverlay />
     <HeaderMainArea />
-    <component :is="chatStore.chatActiveId ? ChatPages : EmptyChat" />
+    <component
+      :is="activeComponent"
+      :key="route.fullPath"
+    />
   </main>
 </template>
 

@@ -98,7 +98,7 @@ export const useChatStore = defineStore('chatStore', () => {
         content: el.content,
       }
     })
-    return messagesForSend.slice(currentChatHistory.length - 9)
+    return messagesForSend.slice(-9)
   })
 
   function getTime() {

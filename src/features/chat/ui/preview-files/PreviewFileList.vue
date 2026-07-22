@@ -22,8 +22,13 @@ const previewFilesSize = computed(() => {
   return ['base-preview', `base-preview--${props.size}`]
 })
 
+const shortTextPreviewFile = 11
+const longTextPreviewFile = 50
+
 const textLimit = computed(() => {
-  return props.variant === PreviewFilesVariant.Secondary ? 50 : 11
+  return props.variant === PreviewFilesVariant.Secondary
+    ? longTextPreviewFile
+    : shortTextPreviewFile
 })
 
 function formattedFileName(file: string) {

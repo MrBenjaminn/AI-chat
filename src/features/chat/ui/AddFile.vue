@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import AddFileIcon from '@shared/assets/icons/AddFileIcon.svg?component'
-import { useChatStore } from '@/entities/chat/useChatStore.ts'
+import { useChatStore } from '@/entities/chat/useChatStore'
 import { ref } from 'vue'
-import { fileService } from '@shared/lib/file/fileService'
+import { fileService } from '@/shared/lib/file/fileService'
 
 const chatStore = useChatStore()
 const fileInputRef = ref<HTMLInputElement | null>(null)

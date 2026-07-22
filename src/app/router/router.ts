@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { RouteNames, RouterPaths } from '@/shared/config/routes.ts'
+import { RouteNames, RouterPaths } from '@/shared/config/routes'
+import type { RouteRecordRaw } from 'vue-router'
 import { useLoginStore } from '@/shared/stores/useLoginStore'
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: RouterPaths.home,
     name: RouteNames.homePage,
@@ -28,17 +30,31 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, _from) => {
   const auth = to.matched.some((record) => record.meta.requiresAuth)
   const loginStore = useLoginStore()
   loginStore.syncAuthData()
 
   if (auth && !loginStore.objDataAuth.userKey) {
-    next(RouterPaths.login)
-  } else if (to.name === RouteNames.loginPage && loginStore.objDataAuth.userKey) {
-    next('/')
-  } else {
-    next()
+    return RouterPaths.login
+  }
+
+  if (to.name === RouteNames.loginPage && loginStore.objDataAuth.userKey) {
+    return '/'
+  }
+
+  if (to.name === RouteNames.chat) {
+    const chatStore = useChatStore()
+    const rawId = to.params.id
+    const id = Array.isArray(rawId) ? rawId[0] : rawId
+
+    const chat = chatStore.chatsList.find((c) => c.id === id)
+
+    if (!chat) {
+      return { name: RouteNames.homePage }
+    }
+
+    chatStore.setActiveChat(id)
   }
 })
 export default router

@@ -2,6 +2,7 @@ import { type Attachments, type ListTypeFiles, TypeFiles } from '../../type/chat
 import AudioIcon from '../../assets/icons/Audio-icon.svg?component'
 import VideoIcon from '../../assets/icons/Video-icon.svg?component'
 import PdfIcon from '../../assets/icons/Pdf-icon.svg?component'
+import { type Component } from 'vue'
 
 export function currentTypeFile(file: File) {
   if (file.type.includes('pdf')) return TypeFiles.file
@@ -11,19 +12,14 @@ export function currentTypeFile(file: File) {
   return null
 }
 
-export function checkType(file: Attachments) {
-  if (file.kind === TypeFiles.image) return
-  const resultTypeFiles: ListTypeFiles = file.kind
+const fileStrategy: Record<ListTypeFiles, Component> = {
+  [TypeFiles.audio]: AudioIcon,
+  [TypeFiles.video]: VideoIcon,
+  [TypeFiles.file]: PdfIcon,
+}
 
-  switch (resultTypeFiles) {
-    case TypeFiles.audio:
-      return AudioIcon
-    case TypeFiles.video:
-      return VideoIcon
-    case TypeFiles.file:
-      return PdfIcon
-    default:
-      const exhaustiveCheck: never = resultTypeFiles
-      return exhaustiveCheck
-  }
+export function checkType(file: Attachments): Component | null {
+  if (file.kind === TypeFiles.image) return null
+  const resultTypeFiles: ListTypeFiles = file.kind
+  return fileStrategy[resultTypeFiles]
 }

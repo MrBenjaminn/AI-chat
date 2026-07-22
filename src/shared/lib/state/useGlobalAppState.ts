@@ -1,6 +1,6 @@
 import { createGlobalState } from '@vueuse/core'
 import { ref } from 'vue'
-import { RouteNames } from '../../config/routes'
+import { RouteNames } from '@/shared'
 import { useRouter } from 'vue-router'
 
 export const useGlobalAppState = createGlobalState(() => {

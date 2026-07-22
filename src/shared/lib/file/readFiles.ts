@@ -7,15 +7,17 @@ export function readFiles(file: File): Promise<string> {
     const reader = new FileReader()
 
     reader.onload = () => {
-      const result = reader.result as string
-      const interResult = result.split(',')[1]
-      const resultAudio = finalBase64Url(interResult)
-      const resultAnotherFiles = finalBase64Url(result)
+      const result = reader.result
+      if (typeof result === 'string') {
+        const interResult = result.split(',')[1]
+        const resultAudio = finalBase64Url(interResult)
+        const resultAnotherFiles = finalBase64Url(result)
 
-      if (currentTypeFile(file) === TypeFiles.audio) {
-        resolve(resultAudio)
-      } else {
-        resolve(resultAnotherFiles)
+        if (currentTypeFile(file) === TypeFiles.audio) {
+          resolve(resultAudio)
+        } else {
+          resolve(resultAnotherFiles)
+        }
       }
     }
 
