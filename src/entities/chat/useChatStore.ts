@@ -1,12 +1,20 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { format } from 'date-fns'
-import type { Attachments, Chat, CreateMessageParams, MessagesMap, MessageType } from '@/shared'
+import type {
+  Attachments,
+  Chat,
+  CreateMessageParams,
+  MessagesMap,
+  MessageType,
+  FileRaw,
+} from '@/shared'
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatsList = ref<Chat[]>([])
   const messagesMap = ref<MessagesMap>({})
   const files = ref<Attachments[]>([])
+  const filesSource = ref<FileRaw[]>([])
   const chatActiveId = ref<string | null>(null)
 
   const STORAGE_KEY = 'llm_chat_app:v1'
@@ -143,5 +151,6 @@ export const useChatStore = defineStore('chatStore', () => {
     chatActiveId,
     lastUserMessage,
     contextMessages,
+    filesSource,
   }
 })

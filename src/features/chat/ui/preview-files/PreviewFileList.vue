@@ -67,7 +67,9 @@ function formattedFileName(file: string) {
           :variant="ButtonVariant.Secondary"
           :size="null"
           label="deleteFile"
-          @click.prevent="fileService.deletePreviewFile(item.id, chatStore.files)"
+          @click.prevent="
+            fileService.deletePreviewFile(item.id, chatStore.files, chatStore.filesSource)
+          "
           v-if="props.variant === PreviewFilesVariant.Primary"
         >
           <DeleteFile />

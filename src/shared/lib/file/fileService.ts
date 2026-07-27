@@ -1,10 +1,9 @@
 import { currentTypeFile } from '../../lib/file/currentFileType'
-import { readFiles } from '../../lib/file/readFiles'
-import { TypeFormatFiles, type Attachments } from '../../type/chats'
+import { type Attachments, type FileRaw } from '@/shared'
 import { clearPreviewUrl } from '../../lib/file/clearPreviewUrl'
 
 export const fileService = {
-  async handleAddFile(event: Event, files: Attachments[]) {
+  handleAddFile(event: Event, files: Attachments[], filesSource: FileRaw[]) {
     if (event.target instanceof HTMLInputElement) {
       const currentFile = event.target
 
@@ -12,32 +11,40 @@ export const fileService = {
         for (const file of Array.from(currentFile.files)) {
           const preview = URL.createObjectURL(file)
           const kindType = currentTypeFile(file)
-          const currentBase = await readFiles(file)
 
-          if (!kindType) return
+          if (!kindType) continue
+          const idFiles = crypto.randomUUID()
 
           const newItem: Attachments = {
-            id: crypto.randomUUID(),
+            id: idFiles,
             kind: kindType,
             mimeType: file.type,
             fileName: file.name,
             size: file.size,
-            source: {
-              type: TypeFormatFiles.base,
-              value: currentBase,
-            },
             previewUrl: preview,
           }
 
+          const newFileSource = {
+            id: idFiles,
+            fileRaw: file,
+          }
+
           files.push(newItem)
+          filesSource.push(newFileSource)
         }
       }
     }
   },
-  deletePreviewFile(id: string, files: Attachments[]) {
+  deletePreviewFile(id: string, files: Attachments[], filesSource: FileRaw[]) {
     const currentIndexFile = files.findIndex((e) => e.id === id)
-    if (currentIndexFile === -1) return
-    files.splice(currentIndexFile, 1)
-    clearPreviewUrl(files, currentIndexFile)
+    if (currentIndexFile !== -1) {
+      clearPreviewUrl(files, currentIndexFile)
+      files.splice(currentIndexFile, 1)
+    }
+
+    const sourceIndex = filesSource.findIndex((e) => e.id === id)
+    if (sourceIndex !== -1) {
+      filesSource.splice(currentIndexFile, 1)
+    }
   },
 }

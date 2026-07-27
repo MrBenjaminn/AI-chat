@@ -1,4 +1,4 @@
-import type { Attachments } from '../../type/chats'
+import type { Attachments } from '@/shared'
 
 export function clearPreviewUrl(file: Attachments[], index?: number) {
   const revoke = (item: Attachments) => {

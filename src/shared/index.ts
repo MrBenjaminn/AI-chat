@@ -7,6 +7,8 @@ import {
   type CreateMessageParams,
   type Attachments,
   type ContextMessages,
+  type FileBase,
+  type FileRaw,
 } from './type/chats'
 
 export {
@@ -16,4 +18,6 @@ export {
   type CreateMessageParams,
   type Attachments,
   type ContextMessages,
+  type FileBase,
+  type FileRaw,
 }

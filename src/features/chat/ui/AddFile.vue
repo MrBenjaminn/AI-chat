@@ -8,7 +8,7 @@ const chatStore = useChatStore()
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const onFileChange = (event: Event) => {
-  fileService.handleAddFile(event, chatStore.files)
+  fileService.handleAddFile(event, chatStore.files, chatStore.filesSource)
 
   if (fileInputRef.value) {
     fileInputRef.value.value = ''

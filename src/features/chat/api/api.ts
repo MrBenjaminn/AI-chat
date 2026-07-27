@@ -1,49 +1,60 @@
 import { apiInstanceChat } from '@/shared/api/base'
 import { type Attachments, type ContextMessages } from '@/shared'
-import { RoleSender } from '@/shared/type/chats'
+import { type FileRaw, RoleSender } from '@/shared/type/chats'
 import type { OpenRouterMessageContent } from '@/features/chat/api/type'
 import { toValue } from 'vue'
+import { readFiles } from '@/shared/lib/file/readFiles'
 
-function currentTypeFileResponse(file?: Attachments): OpenRouterMessageContent | undefined {
+async function currentTypeFileResponse(
+  file: Attachments,
+  fileBase: FileRaw,
+): Promise<OpenRouterMessageContent | undefined> {
   if (!file) return
-  const baseData = file?.source?.value
-  if (!baseData) return
+  if (!fileBase) return
+  const currentBase = await readFiles(fileBase.fileRaw)
+  if (!currentBase) return
 
   const filesBodyResponse = {
-    image: { type: 'image_url', image_url: { url: baseData } },
-    file: { type: 'file', file: { filename: 'document.pdf', file_data: baseData } },
-    audio: { type: 'input_audio', input_audio: { data: baseData, format: file?.mimeType } },
-    video: { type: 'video_url', video_url: { url: baseData } },
+    image: { type: 'image_url', image_url: { url: currentBase } },
+    file: { type: 'file', file: { filename: file.fileName, file_data: currentBase } },
+    audio: { type: 'input_audio', input_audio: { data: currentBase, format: file?.mimeType } },
+    video: { type: 'video_url', video_url: { url: currentBase } },
   }
 
   return filesBodyResponse[file.kind]
 }
 
-export async function responseApi(
+export async function prepareChatBody(
   text: string,
+  fileBase: FileRaw[],
   files?: Attachments[],
   messages?: ContextMessages[],
-): Promise<string> {
+) {
   const model = import.meta.env.VITE_OPENROUTER_MODEL
   const typeText = { type: 'text', text: text }
-  console.log(messages)
 
   let messagesContent: OpenRouterMessageContent[] = [typeText]
 
   if (files && files.length > 0) {
-    const formattedFiles = files
-      .map(currentTypeFileResponse)
-      .filter((file): file is OpenRouterMessageContent => !!file)
+    const filePromises = files.map((el) => {
+      const source = fileBase.find((item) => el.id === item.id)
+      if (!source) return
+      return currentTypeFileResponse(el, source)
+    })
+
+    const resolvedFiles = await Promise.all(filePromises)
+
+    const formattedFiles = resolvedFiles.filter((file): file is OpenRouterMessageContent => !!file)
 
     messagesContent = [...messagesContent, ...formattedFiles]
   }
   const rawMessages = toValue(messages)
+
   const responseTextBody = {
     model,
     messages: [...(rawMessages ?? []), { role: RoleSender.user, content: text }],
     reasoning: { enabled: true },
   }
-
   const responseFilesBody = {
     model,
     messages: [
@@ -55,8 +66,17 @@ export async function responseApi(
     ],
   }
 
-  const currentBody = (files?.length ?? 0) > 0 ? responseFilesBody : responseTextBody
-  const responseJustText = await apiInstanceChat.post('/chat/completions', currentBody)
+  return (files?.length ?? 0) > 0 ? responseFilesBody : responseTextBody
+}
+
+export async function responseApi(
+  text: string,
+  fileBase: FileRaw[],
+  files?: Attachments[],
+  messages?: ContextMessages[],
+): Promise<string> {
+  const body = await prepareChatBody(text, fileBase, files, messages)
+  const responseJustText = await apiInstanceChat.post('/chat/completions', body)
   const aiResponseText = responseJustText.data?.choices[0]?.message?.content
 
   if (!aiResponseText) {

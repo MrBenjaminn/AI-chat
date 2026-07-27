@@ -2,7 +2,13 @@ import { computed, ref } from 'vue'
 import { useChatStore } from '@/entities/chat/useChatStore'
 import { responseApi } from '@/features/chat/api/api'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
-import { type Attachments, type MessageType, messageStatus, RoleSender } from '@/shared/type/chats'
+import {
+  type Attachments,
+  type MessageType,
+  messageStatus,
+  RoleSender,
+  type FileRaw,
+} from '@/shared/type/chats'
 import { useRouter } from 'vue-router'
 import { RouteNames } from '@/shared'
 import { clearPreviewUrl } from '@/shared/lib/file/clearPreviewUrl'
@@ -22,17 +28,15 @@ export function useChatActions() {
   async function modelResponseRequest(
     textUserMsg: string,
     objUserMsg: MessageType,
+    fileBase: FileRaw[],
+    files: Attachments[],
     chatId: string,
   ) {
     globalState.isLlmLoading.value = true
     errorMessage.value = ''
 
     try {
-      const responseReq = await responseApi(
-        textUserMsg,
-        objUserMsg.attachments,
-        chatStore.contextMessages,
-      )
+      const responseReq = await responseApi(textUserMsg, fileBase, files, chatStore.contextMessages)
 
       if (objUserMsg) objUserMsg.status = messageStatus.sent
 
@@ -81,7 +85,7 @@ export function useChatActions() {
     })
 
     chatStore.entryChat(currentId)
-    await modelResponseRequest(textToSend, userMessageObj, currentId)
+    await modelResponseRequest(textToSend, userMessageObj, chatStore.filesSource, files, currentId)
   }
 
   async function retrySend(failedMessageObj: MessageType) {
@@ -89,12 +93,20 @@ export function useChatActions() {
 
     const chatId = chatStore.chatActiveId
     if (!chatId) return
+    const files = failedMessageObj.attachments
+    if (!files) return
 
     failedMessageObj.status = messageStatus.pending
 
     errorMessage.value = ''
 
-    await modelResponseRequest(failedMessageObj.content, failedMessageObj, chatId)
+    await modelResponseRequest(
+      failedMessageObj.content,
+      failedMessageObj,
+      chatStore.filesSource,
+      files,
+      chatId,
+    )
   }
 
   async function sendMessage() {

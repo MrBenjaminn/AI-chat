@@ -43,16 +43,22 @@ export enum TypeFormatFiles {
   url = 'url',
 }
 
+export interface FileBase {
+  type: TypeFormatFiles
+  value: string
+}
+
+export interface FileRaw {
+  id: string
+  fileRaw: File
+}
+
 export interface Attachments {
   id: string
   kind: TypeFiles
   mimeType: string
   fileName: string
   size: number
-  source?: {
-    type: TypeFormatFiles
-    value: string
-  }
   meta?: {
     durations?: number
     format?: string
