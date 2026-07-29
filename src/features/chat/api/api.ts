@@ -9,19 +9,24 @@ async function currentTypeFileResponse(
   file: Attachments,
   fileBase: FileRaw,
 ): Promise<OpenRouterMessageContent | undefined> {
-  if (!file) return
-  if (!fileBase) return
-  const currentBase = await readFiles(fileBase.fileRaw)
-  if (!currentBase) return
+  if (!file || !fileBase) return
 
-  const filesBodyResponse = {
-    image: { type: 'image_url', image_url: { url: currentBase } },
-    file: { type: 'file', file: { filename: file.fileName, file_data: currentBase } },
-    audio: { type: 'input_audio', input_audio: { data: currentBase, format: file?.mimeType } },
-    video: { type: 'video_url', video_url: { url: currentBase } },
+  try {
+    const currentBase = await readFiles(fileBase.fileRaw)
+    if (!currentBase) return
+
+    const filesBodyResponse = {
+      image: { type: 'image_url', image_url: { url: currentBase } },
+      file: { type: 'file', file: { filename: file.fileName, file_data: currentBase } },
+      audio: { type: 'input_audio', input_audio: { data: currentBase, format: file?.mimeType } },
+      video: { type: 'video_url', video_url: { url: currentBase } },
+    }
+
+    return filesBodyResponse[file.kind]
+  } catch (error) {
+    console.error('Ошибка при чтении файла:', error)
+    return undefined
   }
-
-  return filesBodyResponse[file.kind]
 }
 
 export async function prepareChatBody(
@@ -35,9 +40,12 @@ export async function prepareChatBody(
 
   let messagesContent: OpenRouterMessageContent[] = [typeText]
 
+  const sourceMap = new Map()
+  fileBase.forEach((item) => sourceMap.set(item.id, item.fileRaw))
+
   if (files && files.length > 0) {
     const filePromises = files.map((el) => {
-      const source = fileBase.find((item) => el.id === item.id)
+      const source = sourceMap.get(el.id)
       if (!source) return
       return currentTypeFileResponse(el, source)
     })

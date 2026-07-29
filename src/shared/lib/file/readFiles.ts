@@ -7,17 +7,23 @@ export function readFiles(file: File): Promise<string> {
     const reader = new FileReader()
 
     reader.onload = () => {
-      const result = reader.result
-      if (typeof result === 'string') {
-        const interResult = result.split(',')[1]
-        const resultAudio = finalBase64Url(interResult)
-        const resultAnotherFiles = finalBase64Url(result)
+      try {
+        const result = reader.result
+        if (typeof result === 'string') {
+          const interResult = result.split(',')[1]
 
-        if (currentTypeFile(file) === TypeFiles.audio) {
-          resolve(resultAudio)
+          if (currentTypeFile(file) === TypeFiles.audio) {
+            const resultAudio = finalBase64Url(interResult)
+            resolve(resultAudio)
+          } else {
+            const resultAnotherFiles = finalBase64Url(result)
+            resolve(resultAnotherFiles)
+          }
         } else {
-          resolve(resultAnotherFiles)
+          reject(new Error('Не удалось прочитать файл как строку'))
         }
+      } catch (error) {
+        reject(error)
       }
     }
 
