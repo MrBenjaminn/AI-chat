@@ -7,12 +7,12 @@ import { readFiles } from '@/shared/lib/file/readFiles'
 
 async function currentTypeFileResponse(
   file: Attachments,
-  fileBase: FileRaw,
+  fileBase: File,
 ): Promise<OpenRouterMessageContent | undefined> {
   if (!file || !fileBase) return
 
   try {
-    const currentBase = await readFiles(fileBase.fileRaw)
+    const currentBase = await readFiles(fileBase)
     if (!currentBase) return
 
     const filesBodyResponse = {
