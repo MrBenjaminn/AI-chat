@@ -1,10 +1,30 @@
 <script setup lang="ts">
 import { EmptyChat, HeaderMainArea } from '@/features/chat'
 import { CloseSidebarOverlay, SideBar } from '@/widgets/sidebar'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
 import { ChatPages } from '@/widgets/chatpage'
+import { useChatStore } from '@/entities/chat/useChatStore.ts'
+import { onUnmounted, watch, computed } from 'vue'
+import { clearPreviewUrl } from '@/shared/lib/file/clearPreviewUrl'
+import { useRoute } from 'vue-router'
 
-const chatActions = useChatActions()
+const chatStore = useChatStore()
+const route = useRoute()
+
+onUnmounted(() => {
+  clearPreviewUrl(chatStore.files)
+})
+
+const activeComponent = computed(() => {
+  return route.params.id ? ChatPages : EmptyChat
+})
+
+watch(
+  () => route.params.id,
+  () => {
+    clearPreviewUrl(chatStore.files)
+    chatStore.files = []
+  },
+)
 </script>
 
 <template>
@@ -12,7 +32,10 @@ const chatActions = useChatActions()
   <main class="main-area-wrapper">
     <CloseSidebarOverlay />
     <HeaderMainArea />
-    <component :is="chatActions.chatActiveId.value ? ChatPages : EmptyChat" />
+    <component
+      :is="activeComponent"
+      :key="route.fullPath"
+    />
   </main>
 </template>
 

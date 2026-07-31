@@ -2,13 +2,13 @@
 import iconSideBarOut from '@/shared/assets/icons/Side-Bar-Out.svg?component'
 import iconSideBarSettings from '@/shared/assets/icons/Side-Bar-Settings.svg?component'
 import iconPlus from '@/shared/assets/icons/Plus.svg?component'
-import { ButtonVariant } from '@/shared/ui/button/model/button.js'
-import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.js'
+import { ButtonVariant } from '@/shared/ui/button/model/button'
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 
 import { ChatHistory } from '@/features/chat'
 import { AccountInfo } from '@/entities/account'
 import { Button } from '@/shared'
-import { useLoginStore } from "@/shared/stores/useLoginStore.ts";
+import { useLoginStore } from '@/shared/stores/useLoginStore'
 
 const { sideBarState, sideBarOut, startNewChat, isLlmLoading } = useGlobalAppState()
 

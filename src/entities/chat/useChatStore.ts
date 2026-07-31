@@ -1,17 +1,29 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { format } from 'date-fns'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
-import type { Chat, MessageType, MessagesMap, createMessageParams } from '@/entities/chat/index.ts'
+import type {
+  Attachments,
+  Chat,
+  CreateMessageParams,
+  MessagesMap,
+  MessageType,
+  FileRaw,
+} from '@/shared'
 
 export const useChatStore = defineStore('chatStore', () => {
   const chatsList = ref<Chat[]>([])
   const messagesMap = ref<MessagesMap>({})
-  const chatActions = useChatActions()
+  const files = ref<Attachments[]>([])
+  const filesSource = ref<FileRaw[]>([])
+  const chatActiveId = ref<string | null>(null)
 
   const STORAGE_KEY = 'llm_chat_app:v1'
 
   const rawData = localStorage.getItem(STORAGE_KEY)
+
+  function setActiveChat(id: string | null) {
+    chatActiveId.value = id
+  }
 
   if (rawData) {
     try {
@@ -47,19 +59,19 @@ export const useChatStore = defineStore('chatStore', () => {
   )
 
   const activeChat = computed(() => {
-    return chatsList.value.find((Chat) => Chat.id === chatActions.chatActiveId.value)
+    return chatsList.value.find((chat) => chat.id === chatActiveId.value)
   })
 
-  function createNewChat(id: string, firstMessageText: string) {
+  function createNewChat(chatId: string, firstMessageText: string) {
     const shortTitle = firstMessageText.slice(0, 27) + '...'
 
     messagesMap.value = {
       ...messagesMap.value,
-      [id]: [],
+      [chatId]: [],
     }
 
     chatsList.value.push({
-      id: id,
+      id: chatId,
       title: shortTitle,
       createAt: Date.now(),
       updateAt: Date.now(),
@@ -76,9 +88,25 @@ export const useChatStore = defineStore('chatStore', () => {
   }
 
   const currentMessages = computed(() => {
-    if (!chatActions.chatActiveId.value) return []
+    if (!chatActiveId.value) return []
 
-    return messagesMap.value[chatActions.chatActiveId.value] || []
+    return messagesMap.value[chatActiveId.value] || []
+  })
+
+  const lastUserMessage = computed(() => {
+    return currentMessages.value.at(-2)
+  })
+
+  const contextMessages = computed(() => {
+    if (!chatActiveId.value) return []
+    const currentChatHistory = messagesMap.value[chatActiveId.value]
+    const messagesForSend = currentChatHistory.map((el) => {
+      return {
+        role: el.role,
+        content: el.content,
+      }
+    })
+    return messagesForSend.slice(-9)
   })
 
   function getTime() {
@@ -86,8 +114,9 @@ export const useChatStore = defineStore('chatStore', () => {
     return String(format(date, 'HH:mm'))
   }
 
-  function createNewMessage(params: createMessageParams) {
+  function createNewMessage(params: CreateMessageParams) {
     const linkMessage: MessageType = {
+      attachments: params.files,
       id: crypto.randomUUID(),
       chatId: params.chatId,
       role: params.sender,
@@ -117,5 +146,11 @@ export const useChatStore = defineStore('chatStore', () => {
     activeChat,
     createNewChat,
     entryChat,
+    files,
+    setActiveChat,
+    chatActiveId,
+    lastUserMessage,
+    contextMessages,
+    filesSource,
   }
 })

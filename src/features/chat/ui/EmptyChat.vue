@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import ButtonTelegram from '@shared/assets/icons/Paper-Plane.svg?component'
 import { Button } from '@/shared'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
+import { useChatActions } from '@/features/chat/model/useChatActions'
+import { useChatStore } from '@/entities/chat/useChatStore'
+import AddFile from '@/features/chat/ui/AddFile.vue'
+import { PreviewFileList } from '@/features/chat'
+import {
+  PreviewFilesSize,
+  PreviewFilesVariant,
+} from '@/features/chat/ui/preview-files/model/preview.ts'
 
 const chatActions = useChatActions()
-
+const chatStore = useChatStore()
 </script>
 
 <template>
@@ -13,28 +20,38 @@ const chatActions = useChatActions()
       <h2 class="chat-card__title">Welcome back, Mauro</h2>
       <p class="chat-card__text">Lorem ipsum dolor sit amet consectetur adipiscing elit sed</p>
       <div class="chat-card__input-wrapper">
-        <label
-          for="chat-input"
-          class="visually-hidden"
-          >How can i help you?</label
-        >
-        <input
-          type="text"
-          class="input"
-          id="chat-input"
-          placeholder="How can i help you?"
-          v-model="chatActions.llmAskText.value"
-          @keydown.enter.prevent="chatActions.sendMessage"
+        <PreviewFileList
+          class="ident"
+          :files="chatStore.files"
+          :variant="PreviewFilesVariant.Primary"
+          :size="PreviewFilesSize.Small"
         />
-        <div class="chat-card__button-wrapper">
-          <Button
-            @click.prevent="chatActions.sendMessage"
-            onlyIcon
+        <div class="chat-card__input-group">
+          <AddFile />
+          <label
+            for="chat-input"
+            class="visually-hidden"
+            >How can i help you?</label
           >
-            <template #icon-left>
-              <ButtonTelegram />
-            </template>
-          </Button>
+          <input
+            type="text"
+            class="input"
+            id="chat-input"
+            placeholder="How can i help you?"
+            v-model="chatActions.llmAskText.value"
+            @keydown.enter.prevent="chatActions.sendMessage"
+          />
+          <div class="chat-card__button-wrapper">
+            <Button
+              @click.prevent="chatActions.sendMessage"
+              :disabled="chatActions.isSubmitDisabled.value"
+              onlyIcon
+            >
+              <template #icon-left>
+                <ButtonTelegram />
+              </template>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -77,10 +94,22 @@ const chatActions = useChatActions()
 
 .chat-card__input-wrapper {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  max-width: 444px;
   border: 1px solid var(--border-color);
   border-radius: var(--regular-radius);
   background-color: var(--light-color);
+  padding-left: 6px;
+}
+
+.ident {
+  padding-top: 6px;
+}
+
+.chat-card__input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .input {
@@ -88,7 +117,7 @@ const chatActions = useChatActions()
   width: clamp(142px, 24.3vw, 350px);
   background-color: transparent;
   border: none;
-  padding: var(--small-padding) var(--default-padding);
+  padding: var(--small-padding) var(--default-padding) var(--small-padding) 4px;
   outline: none;
 }
 

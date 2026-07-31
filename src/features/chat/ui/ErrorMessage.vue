@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useChatActions } from '../model/useChatActions'
-import { useGlobalAppState } from "@/shared/lib/state/useGlobalAppState";
+import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 import iconRetrySend from '@shared/assets/icons/RetrySend.svg?component'
-import type { MessageType } from "@/entities/chat";
+import type { MessageType } from '@/shared'
 
 defineProps<{
   role?: string
@@ -20,7 +20,7 @@ const globalState = useGlobalAppState()
   >
     <span class="error-delivery-text">Произошла ошибка</span>
     <button
-      @click="chatActions.retrySend(currentMessage)"
+      @click="currentMessage ? chatActions.retrySend(currentMessage) : null"
       class="retry-action-btn"
       :disabled="globalState.isLlmLoading.value"
     >

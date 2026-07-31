@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ButtonProps } from '@/shared/ui/button/model/button.ts'
-import { ButtonVariant, ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
+import type { ButtonProps } from './model/button'
+import { ButtonVariant, ButtonSize, ButtonType } from './model/button'
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<ButtonProps>(), {
@@ -30,7 +30,7 @@ const buttonClasses = computed(() => {
     :type="href ? undefined : type"
     :is="href ? 'a' : 'button'"
     :href="href"
-    :disable="disabled"
+    :disabled="disabled"
     :aria-label="label"
   >
     <slot name="icon-left" />

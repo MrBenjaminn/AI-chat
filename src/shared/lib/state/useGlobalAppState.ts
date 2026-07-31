@@ -1,6 +1,6 @@
 import { createGlobalState } from '@vueuse/core'
 import { ref } from 'vue'
-import { RouteNames } from '@/shared/config/routes.ts'
+import { RouteNames } from '@/shared'
 import { useRouter } from 'vue-router'
 
 export const useGlobalAppState = createGlobalState(() => {
@@ -12,8 +12,8 @@ export const useGlobalAppState = createGlobalState(() => {
     sideBarState.value = !sideBarState.value
   }
 
-  function startNewChat() {
-    router.push({ name: RouteNames.homePage })
+  async function startNewChat() {
+    await router.push({ name: RouteNames.homePage })
   }
 
   return { sideBarState, isLlmLoading, sideBarOut, startNewChat }

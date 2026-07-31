@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useChatStore } from '@/entities/chat/useChatStore.ts'
+import { useChatStore } from '@/entities/chat/useChatStore'
 import { RouteNames } from '@/shared'
 
 const chatStore = useChatStore()

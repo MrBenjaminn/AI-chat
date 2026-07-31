@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/shared'
-import { useLoginStore } from '@shared/stores/useLoginStore.js'
+import { useLoginStore } from '@/shared/stores/useLoginStore'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { RouteNames } from '@/shared'
-import { ErrorResponse } from "@/pages/login";
+import { ErrorResponse } from '@/pages/login'
 
 const loginStore = useLoginStore()
 const urlParams = new URLSearchParams(window.location.search)
@@ -14,9 +14,9 @@ const router = useRouter()
 const handleAuth = async () => {
   if (checkCode) {
     await loginStore.callBackCode()
-
+    await router.push({ name: RouteNames.homePage })
     if (!loginStore.errorMessage) {
-      await router.push({ name: RouteNames.homePage })
+      await router.push({ name: RouteNames.loginPage })
     }
   }
 }

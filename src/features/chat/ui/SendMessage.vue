@@ -1,22 +1,31 @@
 <script setup lang="ts">
 import PaperPlaneSmall from '@/shared/assets/icons/Paper-Plane-Small.svg'
 import { Button } from '@/shared'
-import { useChatActions } from '@/features/chat/model/useChatActions.ts'
-import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button.ts'
-import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState.ts'
-import { computed } from 'vue'
+import { useChatActions } from '@/features/chat/model/useChatActions'
+import { useChatStore } from '@/entities/chat/useChatStore'
+import { ButtonSize, ButtonType } from '@/shared/ui/button/model/button'
+import AddFile from '@/features/chat/ui/AddFile.vue'
+import { PreviewFileList } from '@/features/chat'
+import {
+  PreviewFilesSize,
+  PreviewFilesVariant,
+} from '@/features/chat/ui/preview-files/model/preview'
 
 const chatActions = useChatActions()
-const globalState = useGlobalAppState()
-
-
-const isSubmitDisabled = computed(() => {
-  return Boolean(globalState.isLlmLoading || !chatActions.llmAskText.value.trim())
-})
+const chatStore = useChatStore()
 </script>
 
 <template>
-  <div class="ai-chat__input-send">
+  <form
+    class="ai-chat__input-send"
+    enctype="multipart/form-data"
+    @submit.prevent="chatActions.sendMessage"
+  >
+    <PreviewFileList
+      :files="chatStore.files"
+      :variant="PreviewFilesVariant.Primary"
+      :size="PreviewFilesSize.Small"
+    />
     <label
       for="input-message"
       class="visually-hidden"
@@ -32,22 +41,29 @@ const isSubmitDisabled = computed(() => {
       @keydown.enter.exact.prevent="chatActions.sendMessage"
     ></textarea>
     <hr />
-    <Button
-      class="ai-chat__send-message"
-      @click.prevent="chatActions.sendMessage"
-      :disabled="isSubmitDisabled"
-      :type="ButtonType.Submit"
-      :size="ButtonSize.Small"
-    >
-      <template #icon-left>
-        <PaperPlaneSmall />
-      </template>
-      Send message
-    </Button>
-  </div>
+    <div class="add-send-wrapper">
+      <AddFile />
+      <Button
+        class="ai-chat__send-message"
+        :disabled="chatActions.isSubmitDisabled.value"
+        :type="ButtonType.Submit"
+        :size="ButtonSize.Small"
+      >
+        <template #icon-left>
+          <PaperPlaneSmall />
+        </template>
+        Send message
+      </Button>
+    </div>
+  </form>
 </template>
 
 <style lang="css" scoped>
+.add-send-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .ai-chat__input-send {
   margin-top: auto;
   width: 100%;
