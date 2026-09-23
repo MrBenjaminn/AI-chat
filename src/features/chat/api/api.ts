@@ -36,7 +36,7 @@ export async function prepareChatBody(
   messages?: ContextMessages[],
 ) {
   const model =
-    import.meta.env.VITE_OPENROUTER_MODEL || 'google/gemma-4-26b-a4b-it:free'
+    import.meta.env.VITE_OPENROUTER_MODEL || 'stealth/space-bunny-alpha'
   const typeText = { type: 'text', text: text }
 
   let messagesContent: OpenRouterMessageContent[] = [typeText]
