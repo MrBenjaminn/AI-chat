@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { authService } from '../lib/auth/tokenService'
 
-const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL
-const openRouterTitle = import.meta.env.VITE_OPENROUTER_APP_TITLE
-const referer = import.meta.env.VITE_OPENROUTER_APP_URL
+const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1'
+const openRouterTitle = import.meta.env.VITE_OPENROUTER_APP_TITLE || 'My AI Chat App'
+const referer =
+  import.meta.env.VITE_OPENROUTER_APP_URL ||
+  (typeof window !== 'undefined' ? window.location.origin : '')
 
 export const apiInstanceChat = axios.create({
   baseURL: baseUrl,
