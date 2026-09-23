@@ -15,7 +15,7 @@ import avatarAssistant from '../assets/images/AvatarAssistant.png'
 export const useLoginStore = defineStore('loginStore', () => {
   const errorMessage = ref('')
   const baseAppUrl = import.meta.env.VITE_OPENROUTER_APP_URL
-  const baseUrlAuth = import.meta.env.VITE_OPENROUTER_BASE_URL_AUTH
+  const baseUrlAuth = import.meta.env.VITE_OPENROUTER_BASE_URL_AUTH || 'https://openrouter.ai/auth'
   const objDataAuth = ref<Partial<authState>>({})
   const isAuthenticated = ref<boolean>(!!objDataAuth.value.userKey)
 
@@ -24,20 +24,31 @@ export const useLoginStore = defineStore('loginStore', () => {
   }
 
   async function startAuth() {
-    const codeVerifier = generateCodeVerifier()
-    const generatedCodeChallenge = await createSHA256CodeChallenge(codeVerifier)
+    try {
+      const codeVerifier = generateCodeVerifier()
+      const generatedCodeChallenge = await createSHA256CodeChallenge(codeVerifier)
 
-    const dataTemp = JSON.stringify({ codeVerifier, generatedCodeChallenge })
+      const dataTemp = JSON.stringify({ codeVerifier, generatedCodeChallenge })
 
-    sessionStorage.setItem(PKCE_KEY, dataTemp)
+      sessionStorage.setItem(PKCE_KEY, dataTemp)
 
-    const myUrl = new URL(baseUrlAuth)
+      const myUrl = new URL(baseUrlAuth)
 
-    myUrl.searchParams.set('callback_url', `${baseAppUrl}${RouterPaths.login}`)
-    myUrl.searchParams.set('code_challenge', generatedCodeChallenge)
-    myUrl.searchParams.set('code_challenge_method', 'S256')
+      const currentOrigin = window.location.origin
+      const basePath = import.meta.env.BASE_URL || '/'
+      const cleanBasePath = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath
+      const appUrl = baseAppUrl || `${currentOrigin}${cleanBasePath}`
+      const callbackUrl = `${appUrl.replace(/\/+$/, '')}${RouterPaths.login}`
 
-    location.href = myUrl.toString()
+      myUrl.searchParams.set('callback_url', callbackUrl)
+      myUrl.searchParams.set('code_challenge', generatedCodeChallenge)
+      myUrl.searchParams.set('code_challenge_method', 'S256')
+
+      location.href = myUrl.toString()
+    } catch (error: any) {
+      errorMessage.value = error?.message || 'Что-то пошло не так.'
+      console.error(error)
+    }
   }
 
   async function callBackCode() {
@@ -65,7 +76,7 @@ export const useLoginStore = defineStore('loginStore', () => {
 
       sessionStorage.removeItem(PKCE_KEY)
 
-      window.history.replaceState(null, '', baseAppUrl)
+      window.history.replaceState(null, '', window.location.pathname)
 
       syncAuthData()
 
