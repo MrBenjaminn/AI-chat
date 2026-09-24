@@ -9,7 +9,7 @@ const referer =
 
 export const apiInstanceChat = axios.create({
   baseURL: baseUrl,
-  timeout: 30000,
+  timeout: 120000,
   headers: {
     'HTTP-Referer': `${referer}`,
     'X-OpenRouter-Title': `${openRouterTitle}`,
@@ -34,7 +34,7 @@ apiInstanceChat.interceptors.request.use(
 
 export const apiInstanceAuth = axios.create({
   baseURL: baseUrl,
-  timeout: 30000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
   },

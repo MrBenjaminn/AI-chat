@@ -1,0 +1,282 @@
+.ai-chat__markdown-content {
+  color: var(--neutral-color);
+  font-size: var(--main-font-size);
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.ai-chat__markdown-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+.ai-chat__markdown-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+.ai-chat__markdown-content p {
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.ai-chat__markdown-content h1,
+.ai-chat__markdown-content h2,
+.ai-chat__markdown-content h3,
+.ai-chat__markdown-content h4,
+.ai-chat__markdown-content h5,
+.ai-chat__markdown-content h6 {
+  color: var(--dark-color);
+  font-weight: 600;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
+.ai-chat__markdown-content h1 {
+  font-size: 1.45rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+.ai-chat__markdown-content h2 {
+  font-size: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 4px;
+}
+
+.ai-chat__markdown-content h3 {
+  font-size: 1.1rem;
+}
+
+.ai-chat__markdown-content h4 {
+  font-size: 1rem;
+}
+
+.ai-chat__markdown-content ul,
+.ai-chat__markdown-content ol {
+  margin: 6px 0 12px 0;
+  padding-left: 24px;
+}
+
+.ai-chat__markdown-content li {
+  margin-bottom: 4px;
+  line-height: 1.55;
+}
+
+.ai-chat__markdown-content li::marker {
+  color: var(--dark-color);
+  font-weight: 600;
+}
+
+.ai-chat__markdown-content li > p {
+  margin-bottom: 4px;
+}
+
+.ai-chat__markdown-content strong,
+.ai-chat__markdown-content b {
+  color: var(--dark-color);
+  font-weight: 600;
+}
+
+.ai-chat__markdown-content blockquote {
+  margin: 12px 0;
+  padding: 8px 16px;
+  border-left: 3px solid var(--primary-color);
+  background-color: rgba(43, 122, 251, 0.05);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  color: var(--neutral-color);
+}
+
+.ai-chat__markdown-content blockquote p {
+  margin: 0;
+}
+
+.ai-chat__markdown-content a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s ease;
+}
+
+.ai-chat__markdown-content a:hover {
+  opacity: 0.8;
+}
+
+.ai-chat__markdown-content hr {
+  margin: 18px 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+
+.ai-chat__markdown-content :not(pre) > code {
+  background-color: #eef2f7;
+  color: #c7254e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 0.9em;
+}
+
+.ai-chat__markdown-content .markdown-code-block {
+  margin: 14px 0;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background-color: #1a1e2d;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ai-chat__markdown-content .markdown-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 14px;
+  background-color: #131722;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.ai-chat__markdown-content .markdown-code-lang {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.ai-chat__markdown-content .markdown-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #c9d1d9;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.ai-chat__markdown-content .markdown-copy-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.ai-chat__markdown-content .markdown-copy-button.copied {
+  background: rgba(46, 160, 67, 0.2);
+  border-color: #2ea043;
+  color: #3fb950;
+}
+
+.ai-chat__markdown-content pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  background-color: transparent !important;
+  scrollbar-width: thin;
+  scrollbar-color: #444c56 transparent;
+}
+
+.ai-chat__markdown-content pre code {
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.ai-chat__markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 13px;
+  display: block;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.ai-chat__markdown-content th,
+.ai-chat__markdown-content td {
+  padding: 8px 14px;
+  border: 1px solid #e1e4e8;
+  text-align: left;
+}
+
+.ai-chat__markdown-content th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.ai-chat__markdown-content tr:nth-child(even) td {
+  background-color: #fbfcfd;
+}
+
+/* Мысли модели (<think>) */
+.ai-chat__markdown-content .markdown-thought {
+  margin: 10px 0 16px 0;
+  border-radius: var(--border-radius);
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  padding: 10px 14px;
+  transition: all 0.25s ease;
+}
+
+.ai-chat__markdown-content .markdown-thought[open] {
+  border-color: #cbd5e1;
+}
+
+.ai-chat__markdown-content .markdown-thought.is-thinking {
+  border-color: rgba(43, 122, 251, 0.4);
+  background-color: rgba(43, 122, 251, 0.03);
+  animation: thought-pulse 2s infinite ease-in-out;
+}
+
+@keyframes thought-pulse {
+  0%,
+  100% {
+    border-color: rgba(43, 122, 251, 0.25);
+  }
+  50% {
+    border-color: rgba(43, 122, 251, 0.6);
+  }
+}
+
+.ai-chat__markdown-content .markdown-thought summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--neutral-color);
+  user-select: none;
+  outline: none;
+  transition: color 0.2s ease;
+}
+
+.ai-chat__markdown-content .markdown-thought.is-thinking summary {
+  color: var(--primary-color);
+}
+
+.ai-chat__markdown-content .markdown-thought summary:hover {
+  color: var(--dark-color);
+}
+
+.ai-chat__markdown-content .markdown-thought-content {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 13px;
+  color: var(--neutral-color);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}

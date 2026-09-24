@@ -43,18 +43,22 @@ router.beforeEach((to, _from) => {
     return '/'
   }
 
+  const chatStore = useChatStore()
+
   if (to.name === RouteNames.chat) {
-    const chatStore = useChatStore()
     const rawId = to.params.id
     const id = Array.isArray(rawId) ? rawId[0] : rawId
 
     const chat = chatStore.chatsList.find((c) => c.id === id)
 
     if (!chat) {
+      chatStore.setActiveChat(null)
       return { name: RouteNames.homePage }
     }
 
     chatStore.setActiveChat(id)
+  } else {
+    chatStore.setActiveChat(null)
   }
 })
 export default router

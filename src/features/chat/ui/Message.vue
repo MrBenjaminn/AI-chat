@@ -5,7 +5,7 @@ import { useChatActions } from '@/features/chat/model/useChatActions'
 import { useLoginStore } from '@/shared/stores/useLoginStore'
 import { useGlobalAppState } from '@/shared/lib/state/useGlobalAppState'
 import { ErrorMessage, PreviewFileList } from '@/features/chat'
-import { Button } from '@/shared'
+import { Button, parseMarkdown } from '@/shared'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import TypingIndicator from '@/shared/ui/loader/TypingIndicator.vue'
 import { RoleSender } from '@/shared/type/chats'
@@ -24,6 +24,34 @@ const globalState = useGlobalAppState()
 
 const messagesContainer = ref<HTMLElement | null>(null)
 
+async function handleContainerClick(event: MouseEvent) {
+  const target = event.target as HTMLElement | null
+  if (!target) return
+
+  const copyBtn = target.closest('.markdown-copy-button') as HTMLButtonElement | null
+  if (!copyBtn) return
+
+  const codeBlock = copyBtn.closest('.markdown-code-block')
+  const codeEl = codeBlock?.querySelector('pre code')
+  if (!codeEl) return
+
+  const codeText = codeEl.textContent || ''
+  try {
+    await navigator.clipboard.writeText(codeText)
+    const copyTextSpan = copyBtn.querySelector('.copy-text')
+    const originalText = copyTextSpan?.textContent || 'Копировать'
+    if (copyTextSpan) copyTextSpan.textContent = 'Скопировано!'
+    copyBtn.classList.add('copied')
+
+    setTimeout(() => {
+      if (copyTextSpan) copyTextSpan.textContent = originalText
+      copyBtn.classList.remove('copied')
+    }, 2000)
+  } catch (e) {
+    console.error('Не удалось скопировать код', e)
+  }
+}
+
 const lastAssistantMessageId = computed(() => {
   const messages = chatStore.currentMessages
   if (messages.length === 0) return null
@@ -32,17 +60,51 @@ const lastAssistantMessageId = computed(() => {
   return lastMessage.role === RoleSender.assistant ? lastMessage.id : null
 })
 
+const showTypingIndicator = computed(() => {
+  if (!globalState.isLlmLoading.value) return false
+  const messages = chatStore.currentMessages
+  if (messages.length === 0) return true
+  const lastMessage = messages[messages.length - 1]
+  return lastMessage.role === RoleSender.user
+})
+
+function scrollThinkingContainers() {
+  if (!messagesContainer.value) return
+  const openThoughts = messagesContainer.value.querySelectorAll<HTMLElement>(
+    '.markdown-thought[open] .markdown-thought-content, .markdown-thought.is-thinking .markdown-thought-content',
+  )
+  openThoughts.forEach((el) => {
+    el.scrollTop = el.scrollHeight
+  })
+}
+
 function scrollToBottom() {
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    if (messagesContainer.value.parentElement) {
+      messagesContainer.value.parentElement.scrollTop =
+        messagesContainer.value.parentElement.scrollHeight
+    }
   }
+  scrollThinkingContainers()
 }
 
 watch(
-  () => chatStore.currentMessages.length,
+  [
+    () => chatStore.currentMessages.length,
+    () => {
+      const msgs = chatStore.currentMessages
+      if (msgs.length === 0) return 0
+      const last = msgs[msgs.length - 1]
+      return last.role === RoleSender.assistant ? last.content.length : 0
+    },
+  ],
   async () => {
     await nextTick()
     scrollToBottom()
+    requestAnimationFrame(() => {
+      scrollToBottom()
+    })
   },
 )
 
@@ -66,6 +128,7 @@ withDefaults(defineProps<Props>(), {
   <div
     ref="messagesContainer"
     class="ai-chat__message-item"
+    @click="handleContainerClick"
   >
     <div
       class="ai-chat__message"
@@ -90,7 +153,15 @@ withDefaults(defineProps<Props>(), {
         />
         <span class="ai-chat__sender-date"> {{ item.time }} </span>
       </div>
-      <p class="ai-chat__text-message">
+      <div
+        v-if="item.role === RoleSender.assistant"
+        class="ai-chat__text-message ai-chat__markdown-content"
+        v-html="parseMarkdown(item.content)"
+      />
+      <p
+        v-else
+        class="ai-chat__text-message ai-chat__user-message"
+      >
         {{ item.content }}
       </p>
       <ErrorMessage
@@ -100,7 +171,7 @@ withDefaults(defineProps<Props>(), {
       />
       <div class="ai-chat__buttons">
         <Button
-          v-if="item.id === lastAssistantMessageId"
+          v-if="item.id === lastAssistantMessageId && !globalState.isLlmLoading.value"
           :variant="ButtonVariant.Secondary"
           :size="null"
           label="retry-last-message"
@@ -111,7 +182,7 @@ withDefaults(defineProps<Props>(), {
           <RetryLastUserMessageIcon />
         </Button>
         <Button
-          v-if="item.role === RoleSender.assistant"
+          v-if="item.role === RoleSender.assistant && !globalState.isLlmLoading.value"
           :variant="ButtonVariant.Secondary"
           :size="null"
           label="copy-text"
@@ -125,7 +196,7 @@ withDefaults(defineProps<Props>(), {
     </div>
 
     <transition name="fade">
-      <TypingIndicator v-if="globalState.isLlmLoading.value" />
+      <TypingIndicator v-if="showTypingIndicator" />
     </transition>
   </div>
 </template>
@@ -170,6 +241,12 @@ withDefaults(defineProps<Props>(), {
   font-weight: 400;
   line-height: 1.5;
   margin-left: 44px;
+  width: calc(100% - 44px);
+  box-sizing: border-box;
+}
+
+.ai-chat__user-message {
+  white-space: pre-wrap;
 }
 
 .ai-chat__sender-info {

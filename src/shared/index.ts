@@ -1,5 +1,6 @@
 export { default as Button } from './ui/button/Button.vue'
 export { RouteNames } from './config/routes.ts'
+export { parseMarkdown } from './lib/markdown'
 import {
   type MessageType,
   type MessagesMap,

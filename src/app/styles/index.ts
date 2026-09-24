@@ -1,3 +1,5 @@
 import './varibales.css'
 import './normalize.css'
 import './globals.css'
+import 'highlight.js/styles/atom-one-dark.css'
+import './markdown.css'

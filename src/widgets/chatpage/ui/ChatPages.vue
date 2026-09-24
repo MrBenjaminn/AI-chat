@@ -9,9 +9,14 @@ const chatStore = useChatStore()
 
 const currentCreateChatTime = computed(() => {
   const currentTimeStep = chatStore.activeChat?.createAt
-  if (currentTimeStep) {
-    return format(new Date(currentTimeStep), 'dd.MM.yyyy HH:mm')
+  if (currentTimeStep && !isNaN(Number(currentTimeStep))) {
+    try {
+      return format(new Date(Number(currentTimeStep)), 'dd.MM.yyyy HH:mm')
+    } catch {
+      return ''
+    }
   }
+  return ''
 })
 </script>
 
